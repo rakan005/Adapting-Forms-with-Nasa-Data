@@ -28,6 +28,8 @@ mvn spring-boot:run
 
 The service listens on `http://localhost:8080`.
 
+Open `src/main/resources/static/index.html` directly in a browser for the standalone local demo. When Spring Boot is running, open `http://localhost:8080/` to serve the same page and select **Use Java API** to send requests to the backend.
+
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - Health: `http://localhost:8080/actuator/health`
 - H2 console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/advisor`, user `sa`, blank password)

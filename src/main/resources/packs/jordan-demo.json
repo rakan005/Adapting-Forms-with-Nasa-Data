@@ -1,0 +1,21 @@
+{
+  "code": "JO-DEMO-01",
+  "name": "Jordan Demonstration Pack",
+  "scope": "LOCAL",
+  "priority": 10,
+  "status": "REVIEWED",
+  "demo": true,
+  "hemisphere": "NORTHERN",
+  "language": "en",
+  "regions": [
+    { "name": "Jordan demonstration bounds", "minLat": 29.0, "maxLat": 33.5, "minLon": 34.8, "maxLon": 39.4 }
+  ],
+  "thresholds": { "rainDeficitPercent": 25, "heatMarginC": 2.0, "nitrogenBoost": 2.0 },
+  "crops": [
+    { "code": "WHEAT", "nameEn": "Wheat", "nameAr": "قمح", "family": "CEREAL", "salinityLimitDsm": 6.0, "waterDemand": "MEDIUM", "requiresIrrigation": false, "heatLimitC": 32, "legume": false, "sowingWindows": [{ "startMonth": 10, "endMonth": 12 }] },
+    { "code": "BARLEY", "nameEn": "Barley", "nameAr": "شعير", "family": "CEREAL", "salinityLimitDsm": 8.0, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 34, "legume": false, "sowingWindows": [{ "startMonth": 10, "endMonth": 12 }] },
+    { "code": "LENTIL", "nameEn": "Lentil", "nameAr": "عدس", "family": "LEGUME", "salinityLimitDsm": 4.0, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 29, "legume": true, "sowingWindows": [{ "startMonth": 11, "endMonth": 1 }] },
+    { "code": "TOMATO", "nameEn": "Tomato", "nameAr": "بندورة", "family": "VEGETABLE", "salinityLimitDsm": 3.0, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 35, "legume": false, "sowingWindows": [{ "startMonth": 2, "endMonth": 4 }] },
+    { "code": "CHICKPEA", "nameEn": "Chickpea", "nameAr": "حمص", "family": "LEGUME", "salinityLimitDsm": 3.5, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 31, "legume": true, "sowingWindows": [{ "startMonth": 11, "endMonth": 2 }] }
+  ]
+}

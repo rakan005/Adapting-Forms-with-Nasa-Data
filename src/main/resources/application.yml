@@ -20,13 +20,15 @@ spring:
     default-property-inclusion: non_null
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
 advisor:
+  cors:
+    allowed-origins: ${ADVISOR_CORS_ALLOWED_ORIGINS:http://localhost:4173,http://localhost:8080}
   ai:
     api-key: ${GEMINI_API_KEY:}
     model: ${GEMINI_MODEL:gemini-3.5-flash-lite}

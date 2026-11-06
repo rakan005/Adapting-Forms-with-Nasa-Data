@@ -10,6 +10,8 @@ Java 21 / Spring Boot backend prototype based on the supplied architecture diagr
 - Pack, crop, and geographic coverage reference endpoints.
 - H2 file database, Flyway schema migration, request validation, consistent API errors, and Swagger UI.
 - Pluggable `ClimateProvider`; the current implementation is `FixtureClimateProvider`.
+- Browser geolocation with manual coordinate fallback, plus free-form crop selection in the demo UI.
+- Advice can be restricted to selected crops with repeated `crops` query parameters; crops missing from the active pack are returned as `NO_PACK_DATA` exclusions.
 
 ## Requirements
 
@@ -56,6 +58,14 @@ Request advice (replace `1` with the returned farm id):
 ```http
 POST /api/v1/farms/1/advice?lang=ar
 ```
+
+Optionally ask the rules to evaluate selected crops only:
+
+```http
+POST /api/v1/farms/1/advice?lang=ar&crops=WHEAT&crops=LENTIL
+```
+
+The browser asks permission before reading device location. If location access is unavailable, enter latitude and longitude manually. Crop names can be entered freely; this does not add agronomy data. A name absent from the active pack is reported as `NO_PACK_DATA` and receives no recommendation.
 
 Other endpoints:
 

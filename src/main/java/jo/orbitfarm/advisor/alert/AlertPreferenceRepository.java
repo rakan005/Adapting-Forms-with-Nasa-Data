@@ -1,0 +1,1 @@
+package jo.orbitfarm.advisor.alert;import org.springframework.data.jpa.repository.JpaRepository;import java.util.Optional;public interface AlertPreferenceRepository extends JpaRepository<AlertPreferenceEntity,Long>{Optional<AlertPreferenceEntity> findByFarmerId(Long farmerId);}

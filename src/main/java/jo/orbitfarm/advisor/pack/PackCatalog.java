@@ -29,7 +29,7 @@ public class PackCatalog {
         this.packs = List.copyOf(loaded);
     }
     public List<CropPack> all() { return packs; }
-    public List<CropPack> active() { return packs.stream().filter(p -> "REVIEWED".equals(p.status())).toList(); }
+    public List<CropPack> active() { return packs.stream().filter(p -> "REVIEWED".equals(p.status()) || p.demo()).toList(); }
     public Optional<CropPack> find(String code) { return packs.stream().filter(p -> p.code().equalsIgnoreCase(code)).findFirst(); }
     public Optional<CropPack> resolve(java.math.BigDecimal lat, java.math.BigDecimal lon) {
         return active().stream().filter(p -> p.regions() != null && p.regions().stream().anyMatch(r -> r.contains(lat, lon)))

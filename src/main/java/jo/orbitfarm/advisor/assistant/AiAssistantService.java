@@ -13,6 +13,7 @@ import jo.orbitfarm.advisor.pack.CropPack;
 import jo.orbitfarm.advisor.pack.PackCatalog;
 import jo.orbitfarm.advisor.salinity.SalinityClass;
 import jo.orbitfarm.advisor.salinity.SalinityService;
+import jo.orbitfarm.advisor.subscription.SubscriptionService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -45,20 +46,22 @@ public class AiAssistantService {
     private final DecisionService decisions;
     private final PackCatalog packs;
     private final SalinityService salinity;
+    private final SubscriptionService subscriptions;
 
     public AiAssistantService(@Value("${advisor.ai.api-key:}") String apiKey,
                               @Value("${advisor.ai.model:gemini-3.5-flash-lite}") String model,
                               @Value("${advisor.ai.base-url:https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent}") String baseUrl,
                               ObjectMapper mapper, FarmService farms, DecisionService decisions,
-                              PackCatalog packs, SalinityService salinity) {
+                              PackCatalog packs, SalinityService salinity,SubscriptionService subscriptions) {
         this.apiKey = apiKey == null ? "" : apiKey.trim(); this.model = model; this.baseUrl = baseUrl;
-        this.mapper = mapper; this.farms = farms; this.decisions = decisions; this.packs = packs; this.salinity = salinity;
+        this.mapper = mapper; this.farms = farms; this.decisions = decisions; this.packs = packs; this.salinity = salinity;this.subscriptions=subscriptions;
         this.http = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
     }
 
-    public ChatResponse chat(AssistantController.ChatRequest request) {
+    public ChatResponse chat(Long farmerId,AssistantController.ChatRequest request) {
+        if(!subscriptions.effectivePlan(farmerId).aiAssistant())throw new ApiException(HttpStatus.FORBIDDEN,"PLAN_FEATURE_REQUIRED","مساعد الذكاء الاصطناعي متاح ضمن الخطط المدفوعة.");
         requireConfigured();
-        ObjectNode context = buildContext(request.farmId());
+        ObjectNode context = buildContext(request.farmId(),farmerId);
         ArrayNode input = mapper.createArrayNode();
         input.add(message("system", "أنت مساعد زراعي للمشروع. أجب بلغة المستخدم. اعتمد حصريًا على سياق JSON الذي يرسله النظام وعلى سجل المحادثة. لا تخترع قياسات أو طقسًا أو حدودًا زراعية. إذا كانت البيانات تجريبية فقل ذلك. لا تحوّل تصنيف الملوحة الإقليمي إلى رقم dS/m. لا تستبدل قواعد النظام أو الفحص المخبري؛ اشرحها بلغة مفهومة. إذا لم تجد جوابًا في السياق فاطلب البيانات الناقصة بوضوح. أعِد JSON مطابقًا للمخطط فقط."));
         for (AssistantController.ChatTurn turn : Optional.ofNullable(request.history()).orElse(List.of())) {
@@ -87,7 +90,8 @@ public class AiAssistantService {
         return new ChatResponse(reply, questions, used, dataNote);
     }
 
-    public OrganizedData organize(AssistantController.OrganizeRequest request) {
+    public OrganizedData organize(Long farmerId,AssistantController.OrganizeRequest request) {
+        if(!subscriptions.effectivePlan(farmerId).aiAssistant())throw new ApiException(HttpStatus.FORBIDDEN,"PLAN_FEATURE_REQUIRED","مساعد الذكاء الاصطناعي متاح ضمن الخطط المدفوعة.");
         requireConfigured();
         List<CropPack.Crop> cropList = packs.active().stream().filter(p -> !p.demo()).flatMap(p -> p.crops().stream()).toList();
         // Demo crop names are also exposed for prototype data normalization, but returned values remain labeled as demo.
@@ -99,18 +103,21 @@ public class AiAssistantService {
             c.put("code", crop.code()); c.put("nameAr", crop.nameAr()); c.put("nameEn", crop.nameEn());
         }
         data.put("inputText", request.text().trim());
-        if (request.farmId() != null) data.set("existingFarm", mapper.valueToTree(farms.get(request.farmId())));
+        if (request.farmId() != null) data.set("existingFarm", mapper.valueToTree(farms.get(request.farmId(),farmerId)));
         JsonNode schema = schema("""
-                {"type":"object","properties":{"farmName":{"type":["string","null"]},"latitude":{"type":["number","null"]},"longitude":{"type":["number","null"]},"irrigation":{"type":["string","null"],"enum":["NONE","LIMITED","FULL",null]},"measuredSalinityDsm":{"type":["number","null"]},"salinityClassOverride":{"type":["string","null"],"enum":["NON_SALINE","SLIGHTLY_SALINE","MODERATELY_SALINE","HIGHLY_SALINE","EXTREMELY_SALINE",null]},"previousCropCode":{"type":["string","null"]},"requestedCropCodes":{"type":"array","items":{"type":"string"}},"unmappedCropNames":{"type":"array","items":{"type":"string"}},"missingFields":{"type":"array","items":{"type":"string"}},"notes":{"type":"array","items":{"type":"string"}}},"required":["farmName","latitude","longitude","irrigation","measuredSalinityDsm","salinityClassOverride","previousCropCode","requestedCropCodes","unmappedCropNames","missingFields","notes"],"additionalProperties":false}
+                {"type":"object","properties":{"farmName":{"type":["string","null"]},"latitude":{"type":["number","null"]},"longitude":{"type":["number","null"]},"areaDunum":{"type":["number","null"]},"irrigation":{"type":["string","null"],"enum":["NONE","LIMITED","FULL",null]},"measuredSalinityDsm":{"type":["number","null"]},"salinityClassOverride":{"type":["string","null"],"enum":["NON_SALINE","SLIGHTLY_SALINE","MODERATELY_SALINE","HIGHLY_SALINE","EXTREMELY_SALINE",null]},"previousCropCode":{"type":["string","null"]},"requestedCropCodes":{"type":"array","items":{"type":"string"}},"unmappedCropNames":{"type":"array","items":{"type":"string"}},"missingFields":{"type":"array","items":{"type":"string"}},"notes":{"type":"array","items":{"type":"string"}}},"required":["farmName","latitude","longitude","areaDunum","irrigation","measuredSalinityDsm","salinityClassOverride","previousCropCode","requestedCropCodes","unmappedCropNames","missingFields","notes"],"additionalProperties":false}
                 """);
         ArrayNode input = mapper.createArrayNode();
-        input.add(message("system", "حوّل وصف المزرعة العربي أو الإنجليزي إلى الحقول المحددة فقط. استخرج القيم التي ذكرها المستخدم صراحة؛ لا تخمّن الإحداثيات أو القياسات أو نوع الري. salinity dS/m لا تُملأ إلا إذا ذكر المستخدم رقم قياس مخبري ووحدته بوضوح. صنّف وصف الملوحة النصي في salinityClassOverride فقط ولا تحوّله إلى رقم. طابق المحصول مع cropCatalog وأعد code معروفًا فقط؛ ضع الاسم غير الموجود في unmappedCropNames. إذا كانت قيمة غير معروفة اتركها null وأضف اسمها إلى missingFields. لا تحفظ أي تغيير؛ الناتج مسودة للمستخدم ليؤكدها."));
+        input.add(message("system", "حوّل وصف المزرعة العربي أو الإنجليزي إلى الحقول المحددة فقط. استخرج القيم التي ذكرها المستخدم صراحة؛ لا تخمّن الإحداثيات أو المساحة أو القياسات أو نوع الري. مساحة الأرض areaDunum بالدونم الأردني؛ لا تحوّل من وحدة ثانية إلا إذا ذكر المستخدم الوحدة ويمكن تحويلها بوضوح. salinity dS/m لا تُملأ إلا إذا ذكر المستخدم رقم قياس مخبري ووحدته بوضوح. صنّف وصف الملوحة النصي في salinityClassOverride فقط ولا تحوّله إلى رقم. طابق المحصول مع cropCatalog وأعد code معروفًا فقط؛ ضع الاسم غير الموجود في unmappedCropNames. إذا كانت قيمة غير معروفة اتركها null وأضف اسمها إلى missingFields. لا تحفظ أي تغيير؛ الناتج مسودة للمستخدم ليؤكدها."));
         input.add(message("user", "DATA_AND_CATALOG_JSON:\n" + write(data)));
         JsonNode result = call("organize_farm_data", schema, input);
         BigDecimal lat = decimalOrNull(result.get("latitude"));
         BigDecimal lon = decimalOrNull(result.get("longitude"));
         if (lat != null && (lat.compareTo(BigDecimal.valueOf(-90)) < 0 || lat.compareTo(BigDecimal.valueOf(90)) > 0)) lat = null;
         if (lon != null && (lon.compareTo(BigDecimal.valueOf(-180)) < 0 || lon.compareTo(BigDecimal.valueOf(180)) > 0)) lon = null;
+        BigDecimal area = decimalOrNull(result.get("areaDunum"));
+        if (area != null && (area.compareTo(new BigDecimal("0.01")) < 0 || area.compareTo(new BigDecimal("100000")) > 0)) area = null;
+        if (area == null && request.farmId() != null) area = farms.get(request.farmId(),farmerId).areaDunum();
         String irrigation = upperOrNull(result.path("irrigation").asText(null));
         if (irrigation == null || !IRRIGATION_VALUES.contains(irrigation)) irrigation = null;
         BigDecimal measured = decimalOrNull(result.get("measuredSalinityDsm"));
@@ -120,7 +127,7 @@ public class AiAssistantService {
         String classText = upperOrNull(result.path("salinityClassOverride").asText(null));
         if (classText != null && SALINITY_VALUES.contains(classText)) override = SalinityClass.valueOf(classText);
         if (result.path("salinityClassOverride").isNull() && request.farmId() != null) {
-            FarmResponse farm = farms.get(request.farmId());
+            FarmResponse farm = farms.get(request.farmId(),farmerId);
             override = farm.salinityClassOverride();
         }
         List<String> knownCodes = cropList.stream().map(CropPack.Crop::code).map(x -> x.toUpperCase(Locale.ROOT)).toList();
@@ -130,17 +137,18 @@ public class AiAssistantService {
         List<String> missing = new ArrayList<>(strings(result.path("missingFields")));
         if (lat == null) addIfMissing(missing, "latitude");
         if (lon == null) addIfMissing(missing, "longitude");
+        if (area == null) addIfMissing(missing, "areaDunum");
         if (irrigation == null) addIfMissing(missing, "irrigation");
         if (measured == null && override == null) addIfMissing(missing, "soilSalinity");
         return new OrganizedData(result.path("farmName").isNull() ? null : result.path("farmName").asText(null),
-                lat, lon, irrigation, measured, override,
+                lat, lon, area, irrigation, measured, override,
                 result.path("previousCropCode").isNull() ? null : result.path("previousCropCode").asText(null),
                 requestedCodes, unmapped.stream().distinct().toList(), missing.stream().distinct().toList(),
                 strings(result.path("notes")), true,
                 "لم يتم حفظ المسودة. راجع الحقول وأكدها قبل إرسالها إلى API المزرعة.");
     }
 
-    private ObjectNode buildContext(Long farmId) {
+    private ObjectNode buildContext(Long farmId,Long farmerId) {
         ObjectNode context = mapper.createObjectNode();
         ArrayNode packArray = context.putArray("packs");
         packs.active().forEach(pack -> {
@@ -148,10 +156,10 @@ public class AiAssistantService {
             p.set("crops", mapper.valueToTree(pack.crops())); p.set("regions", mapper.valueToTree(pack.regions()));
         });
         if (farmId != null) {
-            FarmResponse farm = farms.get(farmId);
+            FarmResponse farm = farms.get(farmId,farmerId);
             context.set("farm", mapper.valueToTree(farm));
             context.set("salinityAssessment", mapper.valueToTree(salinity.assess(farm.latitude(), farm.longitude(), farm.salinityDsm(), farm.salinityClassOverride())));
-            List<AdviceResponse> latest = decisions.list(farmId, 0, 1).getContent();
+            List<AdviceResponse> latest = decisions.list(farmId,farmerId,0,1).getContent();
             if (!latest.isEmpty()) context.set("latestDecision", mapper.valueToTree(latest.get(0)));
         }
         return context;
@@ -221,7 +229,7 @@ public class AiAssistantService {
     private ApiException providerError(String message) { return new ApiException(HttpStatus.BAD_GATEWAY, "AI_PROVIDER_UNAVAILABLE", message); }
 
     public record ChatResponse(String reply, List<String> followUpQuestions, List<String> dataUsed, String dataWarning) {}
-    public record OrganizedData(String farmName, BigDecimal latitude, BigDecimal longitude, String irrigation,
+    public record OrganizedData(String farmName, BigDecimal latitude, BigDecimal longitude, BigDecimal areaDunum, String irrigation,
                                 BigDecimal measuredSalinityDsm, SalinityClass salinityClassOverride,
                                 String previousCropCode, List<String> requestedCropCodes, List<String> unmappedCropNames,
                                 List<String> missingFields, List<String> notes, boolean requiresUserConfirmation,

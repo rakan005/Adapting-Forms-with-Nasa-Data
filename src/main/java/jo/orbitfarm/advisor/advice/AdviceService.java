@@ -3,6 +3,7 @@ package jo.orbitfarm.advisor.advice;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jo.orbitfarm.advisor.api.ApiException;
+import jo.orbitfarm.advisor.alert.AlertService;
 import jo.orbitfarm.advisor.climate.ClimateProvider;
 import jo.orbitfarm.advisor.climate.GddCalculator;
 import jo.orbitfarm.advisor.decision.DecisionRecordEntity;
@@ -29,16 +30,17 @@ public class AdviceService {
     private final DecisionRecordRepository decisions;
     private final ObjectMapper mapper;
     private final SalinityService salinity;
+    private final AlertService alerts;
 
     public AdviceService(FarmService farms, PackCatalog packs, ClimateProvider climate,
-                        DecisionRecordRepository decisions, ObjectMapper mapper, SalinityService salinity) {
+                        DecisionRecordRepository decisions, ObjectMapper mapper, SalinityService salinity,AlertService alerts) {
         this.farms = farms; this.packs = packs; this.climate = climate; this.decisions = decisions; this.mapper = mapper;
-        this.salinity = salinity;
+        this.salinity = salinity;this.alerts=alerts;
     }
 
     @Transactional
-    public AdviceResponse advise(Long farmId, LocalDate asOf, String language, List<String> requestedCrops) {
-        FarmEntity farm = farms.require(farmId);
+    public AdviceResponse advise(Long farmId,Long farmerId, LocalDate asOf, String language, List<String> requestedCrops) {
+        FarmEntity farm = farms.requireOwned(farmId,farmerId);
         LocalDate date = asOf == null ? LocalDate.now(ZoneId.of("Asia/Amman")) : asOf;
         String lang = language == null ? "en" : language.toLowerCase(Locale.ROOT);
         if (!Set.of("en", "ar").contains(lang)) throw new ApiException(HttpStatus.BAD_REQUEST, "INVALID_LANGUAGE", "lang must be en or ar");
@@ -187,6 +189,7 @@ public class AdviceService {
         response = response.withDecisionId(record.getId());
         record.setResponseJson(write(response));
         decisions.save(record);
+        alerts.evaluateClimate(farmerId,farmId,climate.source(),c.rainfallAnomalyPercent(),c.recentMaxTemperatureC(),c.maxTemperatureTrendC(),selected.map(p->p.thresholds().rainDeficitPercent()).orElse(25));
         return response;
     }
     private String write(Object value) {

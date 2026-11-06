@@ -5,6 +5,7 @@ import jo.orbitfarm.advisor.advice.AdviceResponse;
 import jo.orbitfarm.advisor.api.ApiException;
 import jo.orbitfarm.advisor.farm.FarmService;
 import jo.orbitfarm.advisor.pack.PackCatalog;
+import jo.orbitfarm.advisor.subscription.SubscriptionService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -19,19 +20,21 @@ public class DecisionService {
     private final FarmService farms;
     private final PackCatalog packs;
     private final ObjectMapper mapper;
-    public DecisionService(DecisionRecordRepository records, FarmService farms, PackCatalog packs, ObjectMapper mapper) {
-        this.records = records; this.farms = farms; this.packs = packs; this.mapper = mapper;
+    private final SubscriptionService subscriptions;
+    public DecisionService(DecisionRecordRepository records, FarmService farms, PackCatalog packs, ObjectMapper mapper,SubscriptionService subscriptions) {
+        this.records = records; this.farms = farms; this.packs = packs; this.mapper = mapper;this.subscriptions=subscriptions;
     }
     @Transactional(readOnly = true)
-    public AdviceResponse get(Long id) { return response(records.findById(id).orElseThrow(() -> ApiException.notFound("Decision " + id))); }
+    public AdviceResponse get(Long id,Long farmerId) { DecisionRecordEntity record=records.findById(id).orElseThrow(() -> ApiException.notFound("Decision " + id));farms.requireOwned(record.getFarmId(),farmerId);return response(record); }
     @Transactional(readOnly = true)
-    public Page<AdviceResponse> list(Long farmId, int page, int size) {
-        farms.require(farmId); FarmService.checkPage(page, size);
-        return records.findByFarmIdOrderByCreatedAtDesc(farmId, PageRequest.of(page, size, Sort.by("createdAt").descending())).map(this::response);
+    public Page<AdviceResponse> list(Long farmId,Long farmerId, int page, int size) {
+        farms.requireOwned(farmId,farmerId); FarmService.checkPage(page, size);
+        int cap=subscriptions.effectivePlan(farmerId).decisionHistoryLimit();int boundedSize=Math.min(size,cap);PageRequest pageable=PageRequest.of(page,boundedSize,Sort.by("createdAt").descending());if((long)page*boundedSize>=cap)return Page.empty(pageable);return records.findByFarmIdOrderByCreatedAtDesc(farmId,pageable).map(this::response);
     }
     @Transactional
-    public AdviceResponse recordAction(Long id, ActionRequest request) {
+    public AdviceResponse recordAction(Long id,Long farmerId, ActionRequest request) {
         DecisionRecordEntity record = records.findById(id).orElseThrow(() -> ApiException.notFound("Decision " + id));
+        farms.requireOwned(record.getFarmId(),farmerId);
         String cropCode = request.cropCode() == null ? null : request.cropCode().toUpperCase(Locale.ROOT);
         String requestedCropCode = cropCode;
         if ("PLANTED".equals(request.action()) && (requestedCropCode == null || packs.crops().stream().noneMatch(c -> c.code().equalsIgnoreCase(requestedCropCode)))) {

@@ -9,11 +9,14 @@ import java.time.Instant;
 public class FarmEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(name = "farmer_id") private Long farmerId;
     private String name;
     @Column(nullable = false, precision = 8, scale = 5)
     private BigDecimal latitude;
     @Column(nullable = false, precision = 8, scale = 5)
     private BigDecimal longitude;
+    @Column(name = "area_dunum", precision = 12, scale = 2)
+    private BigDecimal areaDunum;
     @Column(name = "elevation_m") private Integer elevationM;
     private String irrigation;
     @Column(name = "salinity_dsm", precision = 8, scale = 3) private BigDecimal salinityDsm;
@@ -25,12 +28,13 @@ public class FarmEntity {
 
     protected FarmEntity() {}
 
-    public FarmEntity(String name, BigDecimal latitude, BigDecimal longitude, Integer elevationM,
+    public FarmEntity(Long farmerId, String name, BigDecimal latitude, BigDecimal longitude, BigDecimal areaDunum, Integer elevationM,
                       String irrigation, BigDecimal salinityDsm, jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
                       String soilDepth, String previousCropCode) {
-        this.name = name;
+        this.farmerId=farmerId; this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.areaDunum = areaDunum;
         this.elevationM = elevationM;
         this.irrigation = irrigation;
         this.salinityDsm = salinityDsm;
@@ -39,12 +43,20 @@ public class FarmEntity {
         this.previousCropCode = previousCropCode;
     }
 
+    public FarmEntity(Long farmerId, String name, BigDecimal latitude, BigDecimal longitude, Integer elevationM,
+                      String irrigation, BigDecimal salinityDsm, jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
+                      String soilDepth, String previousCropCode) {
+        this(farmerId, name, latitude, longitude, null, elevationM, irrigation, salinityDsm, salinityClassOverride, soilDepth, previousCropCode);
+    }
+
     @PrePersist void onCreate() { createdAt = updatedAt = Instant.now(); }
     @PreUpdate void onUpdate() { updatedAt = Instant.now(); }
     public Long getId() { return id; }
+    public Long getFarmerId() { return farmerId; }
     public String getName() { return name; }
     public BigDecimal getLatitude() { return latitude; }
     public BigDecimal getLongitude() { return longitude; }
+    public BigDecimal getAreaDunum() { return areaDunum; }
     public Integer getElevationM() { return elevationM; }
     public String getIrrigation() { return irrigation; }
     public BigDecimal getSalinityDsm() { return salinityDsm; }
@@ -54,10 +66,10 @@ public class FarmEntity {
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 
-    public void update(String name, BigDecimal latitude, BigDecimal longitude, Integer elevationM,
+    public void update(String name, BigDecimal latitude, BigDecimal longitude, BigDecimal areaDunum, Integer elevationM,
                        String irrigation, BigDecimal salinityDsm, jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
                        String soilDepth, String previousCropCode) {
-        this.name = name; this.latitude = latitude; this.longitude = longitude; this.elevationM = elevationM;
+        this.name = name; this.latitude = latitude; this.longitude = longitude; this.areaDunum = areaDunum; this.elevationM = elevationM;
         this.irrigation = irrigation; this.salinityDsm = salinityDsm; this.salinityClassOverride = salinityClassOverride; this.soilDepth = soilDepth;
         this.previousCropCode = previousCropCode;
     }

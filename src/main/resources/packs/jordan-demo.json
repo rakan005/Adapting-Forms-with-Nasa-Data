@@ -1,9 +1,9 @@
 {
   "code": "JO-DEMO-01",
-  "name": "Jordan Demonstration Pack",
+  "name": "Jordan Demonstration Pack (illustrative defaults; not validated)",
   "scope": "LOCAL",
   "priority": 10,
-  "status": "REVIEWED",
+  "status": "DRAFT",
   "demo": true,
   "hemisphere": "NORTHERN",
   "language": "en",
@@ -16,6 +16,13 @@
     { "code": "BARLEY", "nameEn": "Barley", "nameAr": "شعير", "family": "CEREAL", "salinityLimitDsm": 8.0, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 34, "legume": false, "sowingWindows": [{ "startMonth": 10, "endMonth": 12 }] },
     { "code": "LENTIL", "nameEn": "Lentil", "nameAr": "عدس", "family": "LEGUME", "salinityLimitDsm": 4.0, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 29, "legume": true, "sowingWindows": [{ "startMonth": 11, "endMonth": 1 }] },
     { "code": "TOMATO", "nameEn": "Tomato", "nameAr": "بندورة", "family": "VEGETABLE", "salinityLimitDsm": 3.0, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 35, "legume": false, "sowingWindows": [{ "startMonth": 2, "endMonth": 4 }] },
-    { "code": "CHICKPEA", "nameEn": "Chickpea", "nameAr": "حمص", "family": "LEGUME", "salinityLimitDsm": 3.5, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 31, "legume": true, "sowingWindows": [{ "startMonth": 11, "endMonth": 2 }] }
+    { "code": "CHICKPEA", "nameEn": "Chickpea", "nameAr": "حمص", "family": "LEGUME", "salinityLimitDsm": 3.5, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 31, "legume": true, "sowingWindows": [{ "startMonth": 11, "endMonth": 2 }] },
+    { "code": "OLIVE", "nameEn": "Olive", "nameAr": "زيتون", "family": "TREE", "salinityLimitDsm": 6.0, "waterDemand": "LOW", "requiresIrrigation": false, "heatLimitC": 38, "legume": false, "sowingWindows": [{ "startMonth": 10, "endMonth": 12 }] },
+    { "code": "GRAPE", "nameEn": "Grape", "nameAr": "عنب", "family": "FRUIT", "salinityLimitDsm": 3.0, "waterDemand": "MEDIUM", "requiresIrrigation": true, "heatLimitC": 37, "legume": false, "sowingWindows": [{ "startMonth": 1, "endMonth": 3 }] },
+    { "code": "APPLE", "nameEn": "Apple", "nameAr": "تفاح", "family": "FRUIT", "salinityLimitDsm": 2.5, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 32, "legume": false, "sowingWindows": [{ "startMonth": 12, "endMonth": 2 }] },
+    { "code": "POTATO", "nameEn": "Potato", "nameAr": "بطاطا", "family": "VEGETABLE", "salinityLimitDsm": 4.0, "waterDemand": "MEDIUM", "requiresIrrigation": true, "heatLimitC": 32, "legume": false, "sowingWindows": [{ "startMonth": 1, "endMonth": 3 }] },
+    { "code": "MAIZE", "nameEn": "Corn", "nameAr": "ذرة", "family": "CEREAL", "salinityLimitDsm": 3.0, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 38, "legume": false, "sowingWindows": [{ "startMonth": 3, "endMonth": 5 }] },
+    { "code": "CUCUMBER", "nameEn": "Cucumber", "nameAr": "خيار", "family": "VEGETABLE", "salinityLimitDsm": 2.5, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 35, "legume": false, "sowingWindows": [{ "startMonth": 2, "endMonth": 4 }] },
+    { "code": "CITRUS", "nameEn": "Citrus", "nameAr": "حمضيات", "family": "TREE", "salinityLimitDsm": 3.0, "waterDemand": "HIGH", "requiresIrrigation": true, "heatLimitC": 38, "legume": false, "sowingWindows": [{ "startMonth": 2, "endMonth": 4 }] }
   ]
 }

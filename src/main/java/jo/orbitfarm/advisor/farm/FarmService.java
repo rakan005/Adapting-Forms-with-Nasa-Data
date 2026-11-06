@@ -7,35 +7,41 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import jo.orbitfarm.advisor.subscription.SubscriptionService;
 
 @Service
 public class FarmService {
     private final FarmRepository farms;
-    public FarmService(FarmRepository farms) { this.farms = farms; }
+    private final SubscriptionService subscriptions;
+    public FarmService(FarmRepository farms, SubscriptionService subscriptions) { this.farms = farms; this.subscriptions=subscriptions; }
 
     @Transactional
-    public FarmResponse create(FarmRequest r) {
-        return FarmResponse.from(farms.save(new FarmEntity(r.name(), r.latitude(), r.longitude(), r.elevationM(),
+    public FarmResponse create(Long farmerId,FarmRequest r) {
+        int limit=subscriptions.effectivePlan(farmerId).maxFarms();
+        if(farms.countByFarmerId(farmerId)>=limit)throw new ApiException(HttpStatus.PAYMENT_REQUIRED,"FARM_LIMIT_REACHED","وصلت للحد الأقصى للأراضي في خطتك. راجع الاشتراكات لزيادة الحد.");
+        return FarmResponse.from(farms.save(new FarmEntity(farmerId,r.name(), r.latitude(), r.longitude(), r.areaDunum(), r.elevationM(),
                 r.irrigation(), r.salinityDsm(), r.salinityClassOverride(), r.soilDepth(), r.previousCropCode())));
     }
     @Transactional(readOnly = true)
     public FarmEntity require(Long id) { return farms.findById(id).orElseThrow(() -> ApiException.notFound("Farm " + id)); }
     @Transactional(readOnly = true)
-    public FarmResponse get(Long id) { return FarmResponse.from(require(id)); }
+    public FarmEntity requireOwned(Long id,Long farmerId) { return farms.findByIdAndFarmerId(id,farmerId).orElseThrow(() -> ApiException.notFound("Farm " + id)); }
     @Transactional(readOnly = true)
-    public Page<FarmResponse> list(int page, int size) {
+    public FarmResponse get(Long id,Long farmerId) { return FarmResponse.from(requireOwned(id,farmerId)); }
+    @Transactional(readOnly = true)
+    public Page<FarmResponse> list(Long farmerId,int page, int size) {
         checkPage(page, size);
-        return farms.findAll(PageRequest.of(page, size, Sort.by("id").descending())).map(FarmResponse::from);
+        return farms.findAllByFarmerId(farmerId,PageRequest.of(page, size, Sort.by("id").descending())).map(FarmResponse::from);
     }
     @Transactional
-    public FarmResponse update(Long id, FarmRequest r) {
-        FarmEntity farm = require(id);
-        farm.update(r.name(), r.latitude(), r.longitude(), r.elevationM(), r.irrigation(), r.salinityDsm(), r.salinityClassOverride(), r.soilDepth(), r.previousCropCode());
+    public FarmResponse update(Long id,Long farmerId,FarmRequest r) {
+        FarmEntity farm = requireOwned(id,farmerId);
+        farm.update(r.name(), r.latitude(), r.longitude(), r.areaDunum(), r.elevationM(), r.irrigation(), r.salinityDsm(), r.salinityClassOverride(), r.soilDepth(), r.previousCropCode());
         return FarmResponse.from(farms.save(farm));
     }
     @Transactional
-    public void delete(Long id) {
-        FarmEntity farm = require(id);
+    public void delete(Long id,Long farmerId) {
+        FarmEntity farm = requireOwned(id,farmerId);
         farms.delete(farm);
     }
     public static void checkPage(int page, int size) {

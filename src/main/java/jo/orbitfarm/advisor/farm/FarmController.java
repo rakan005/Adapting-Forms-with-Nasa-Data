@@ -11,10 +11,10 @@ public class FarmController {
     private final FarmService service;
     public FarmController(FarmService service) { this.service = service; }
     @PostMapping @ResponseStatus(HttpStatus.CREATED)
-    public FarmResponse create(@Valid @RequestBody FarmRequest request) { return service.create(request); }
-    @GetMapping("/{id}") public FarmResponse get(@PathVariable Long id) { return service.get(id); }
-    @GetMapping public Page<FarmResponse> list(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return service.list(page, size); }
-    @PutMapping("/{id}") public FarmResponse update(@PathVariable Long id, @Valid @RequestBody FarmRequest request) { return service.update(id, request); }
+    public FarmResponse create(@RequestAttribute("farmerId")Long farmerId,@Valid @RequestBody FarmRequest request) { return service.create(farmerId,request); }
+    @GetMapping("/{id}") public FarmResponse get(@PathVariable Long id,@RequestAttribute("farmerId")Long farmerId) { return service.get(id,farmerId); }
+    @GetMapping public Page<FarmResponse> list(@RequestAttribute("farmerId")Long farmerId,@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "20") int size) { return service.list(farmerId,page, size); }
+    @PutMapping("/{id}") public FarmResponse update(@PathVariable Long id,@RequestAttribute("farmerId")Long farmerId,@Valid @RequestBody FarmRequest request) { return service.update(id,farmerId, request); }
     @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable Long id) { service.delete(id); }
+    public void delete(@PathVariable Long id,@RequestAttribute("farmerId")Long farmerId) { service.delete(id,farmerId); }
 }

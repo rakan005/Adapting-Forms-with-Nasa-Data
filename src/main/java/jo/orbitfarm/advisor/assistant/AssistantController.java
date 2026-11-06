@@ -15,13 +15,13 @@ public class AssistantController {
     public AssistantController(AiAssistantService service) { this.service = service; }
 
     @PostMapping("/chat")
-    public AiAssistantService.ChatResponse chat(@Valid @RequestBody ChatRequest request) {
-        return service.chat(request);
+    public AiAssistantService.ChatResponse chat(@RequestAttribute("farmerId")Long farmerId,@Valid @RequestBody ChatRequest request) {
+        return service.chat(farmerId,request);
     }
 
     @PostMapping("/organize")
-    public AiAssistantService.OrganizedData organize(@Valid @RequestBody OrganizeRequest request) {
-        return service.organize(request);
+    public AiAssistantService.OrganizedData organize(@RequestAttribute("farmerId")Long farmerId,@Valid @RequestBody OrganizeRequest request) {
+        return service.organize(farmerId,request);
     }
 
     public record ChatRequest(Long farmId, @NotBlank @Size(max = 2000) String message,

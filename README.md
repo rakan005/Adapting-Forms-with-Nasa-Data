@@ -131,6 +131,7 @@ The backend can be deployed by a Docker-compatible Java hosting provider using t
 | `PORT` | Usually supplied by the hosting provider; the application defaults to `8080` locally. |
 | `SPRING_DATASOURCE_URL` | Managed PostgreSQL URL, for example `jdbc:postgresql://HOST:5432/DATABASE?sslmode=require`. |
 | `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | Credentials for the managed database. Flyway creates/updates tables at startup. |
+| `SPRING_PROFILES_ACTIVE` | Set to `postgresql` so Flyway uses the PostgreSQL schema migrations. |
 | `SPRING_MAIL_HOST` / `SPRING_MAIL_PORT` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` | SMTP provider credentials used to send registration and login codes. Enable SMTP auth and STARTTLS at the provider. |
 | `MAIL_FROM` | Verified sender address for the SMTP provider. |
 | `OTP_HASH_SECRET` | Long random secret used to hash verification codes. Set a unique production value and keep it private. |
@@ -138,7 +139,7 @@ The backend can be deployed by a Docker-compatible Java hosting provider using t
 
 After deployment, check `/actuator/health`. The separate hosted frontend is configured to call the API's HTTPS origin. If that origin changes, update its `crop-advisor-api-base` meta tag and publish the frontend. The browser calls the API directly, so CORS must allow the exact frontend origin. Do not put the Gemini key in HTML or frontend environment variables.
 
-The default H2 file database is for local development. Set the PostgreSQL variables above on the hosted service and attach persistent managed PostgreSQL before relying on farm records. The code and Flyway migrations support this setup; a live database must still be provisioned in the hosting dashboard. SMTP must also be configured before real users can receive codes.
+The default H2 file database is for local development. Set the PostgreSQL variables above on the hosted service and attach persistent managed PostgreSQL before relying on farm records. The PostgreSQL profile uses its own Flyway migration set; keep `SPRING_PROFILES_ACTIVE=postgresql` when switching the service to PostgreSQL. A live database must still be provisioned in the hosting dashboard. SMTP must also be configured before real users can receive codes.
 
 | Method | Path | Purpose |
 |---|---|---|

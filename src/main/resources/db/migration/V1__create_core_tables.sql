@@ -23,7 +23,7 @@ CREATE TABLE decision_record (
     farmer_action VARCHAR(20),
     farmer_crop_code VARCHAR(40),
     farmer_action_at TIMESTAMP WITH TIME ZONE,
-    response_json TEXT NOT NULL,
+    response_json CLOB NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL,
     CONSTRAINT fk_decision_farm FOREIGN KEY (farm_id) REFERENCES farm(id) ON DELETE CASCADE
 );

@@ -17,7 +17,7 @@ public class DecisionRecordEntity {
     @Column(name = "farmer_action") private String farmerAction;
     @Column(name = "farmer_crop_code") private String farmerCropCode;
     @Column(name = "farmer_action_at") private Instant farmerActionAt;
-    @Column(name = "response_json", nullable = false, columnDefinition = "text") private String responseJson;
+    @Lob @Column(name = "response_json", nullable = false) private String responseJson;
     @Column(name = "created_at", nullable = false) private Instant createdAt;
 
     protected DecisionRecordEntity() {}

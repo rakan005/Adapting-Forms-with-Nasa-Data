@@ -89,6 +89,20 @@ Content-Type: application/json
 
 The organizer returns suggested structured fields for user review; it never writes them into the farm record implicitly.
 
+## Deploying the Java API
+
+The backend can be deployed by a Docker-compatible Java hosting provider using the included `Dockerfile`. Configure these environment variables in the provider's private service settings:
+
+| Variable | Value |
+|---|---|
+| `GEMINI_API_KEY` | The AI Studio key; keep it only in the backend provider's secret settings. |
+| `ADVISOR_CORS_ALLOWED_ORIGINS` | The exact public frontend origin, for example `https://crop-advisor-team-demo.boxyfoam2.chatgpt.site`. |
+| `PORT` | Usually supplied by the hosting provider; the application defaults to `8080` locally. |
+
+After deployment, check `/actuator/health`. Set the frontend's `crop-advisor-api-base` meta tag to the backend's HTTPS origin, then publish the frontend. The browser calls the API directly, so CORS must allow the exact frontend origin. Do not put the Gemini key in HTML or frontend environment variables.
+
+The default H2 file database is suitable for a prototype and may be temporary on hosted containers. Use a managed persistent database before relying on stored farm records in production.
+
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/api/v1/farms?page=0&size=20` | List farms |

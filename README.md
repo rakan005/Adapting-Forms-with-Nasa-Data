@@ -1,44 +1,44 @@
 # Crop Advisor Backend
 
-Java 21 / Spring Boot backend prototype based on the supplied architecture diagrams. It currently runs with a fixed climate fixture and one illustrative Jordan crop pack. **The fixture values and crop thresholds are demonstration values only; they are not NASA observations or agronomic guidance.** Replace the pack and climate provider with reviewed project data before using the recommendations for real farms.
+Java 21 / Spring Boot backend for the Adapting Forms with NASA Data project. The current climate provider and crop pack are demo fixtures; their values are not NASA observations or validated farming advice. The NASA provider stays pending until the project receives and reviews the actual dataset.
 
-## Included in this first version
+## Current capabilities
 
-- Farm create, read, update, list, and delete endpoints.
-- Advice generation, rule reasons, exclusions, warning flags, and a saved decision history.
-- Recording a farmer action (`PLANTED`, `FALLOW`, `OTHER`).
-- Pack, crop, and geographic coverage reference endpoints.
-- H2 file database, Flyway schema migration, request validation, consistent API errors, and Swagger UI.
-- Pluggable `ClimateProvider`; the current implementation is `FixtureClimateProvider`.
-- Browser geolocation with manual coordinate fallback, plus free-form crop selection in the demo UI.
-- Advice can be restricted to selected crops with repeated `crops` query parameters; crops missing from the active pack are returned as `NO_PACK_DATA` exclusions.
+- Farm create, read, update, list, and delete; decision history and farmer action tracking.
+- Crop advice rules for sowing windows, irrigation access, measured soil salinity, regional salinity caution, rainfall deficit and water demand, heat limits, and cereal-to-legume nitrogen restoration.
+- Confidence and geographic coverage levels; unranked advice is returned for broader coverage. Fallow is surfaced when no crop passes the safety rules.
+- Daily temperature degree-day calculation when validated daily observations and crop thresholds are available in a pack.
+- AI chat endpoint with optional current farm and latest advice context; structured data organizer extracts a proposed farm update from natural language and normalizes crop choices against the active pack. Organizer results are drafts and are not saved automatically.
+- Regional salinity reference endpoint based on a 2016 UNDP GeoHub categorical map. Categories are not converted into dS/m. Users can provide a lab measurement or override the regional category.
+- H2 database, Flyway migrations, request validation, API errors, Actuator health, and Swagger UI.
 
-## Requirements
+## Requirements and run
 
-- JDK 21.
-- Apache Maven 3.6.3 or newer, or import `pom.xml` in IntelliJ IDEA and run `CropAdvisorApplication`.
-
-The current coding workspace has Java 17 and does not have Maven installed, so the project is configured for the requested Java 21 target but could not be launched here.
-
-## Run
-
-From this directory:
+- JDK 21 (a JRE alone is not enough to compile).
+- Apache Maven 3.9+.
 
 ```bash
+mvn test
 mvn spring-boot:run
 ```
 
 The service listens on `http://localhost:8080`.
 
-Open `src/main/resources/static/index.html` directly in a browser for the standalone local demo. When Spring Boot is running, open `http://localhost:8080/` to serve the same page and select **Use Java API** to send requests to the backend.
-
 - Swagger UI: `http://localhost:8080/swagger-ui.html`
 - Health: `http://localhost:8080/actuator/health`
-- H2 console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:file:./data/advisor`, user `sa`, blank password)
+- H2 console: `http://localhost:8080/h2-console` (default JDBC URL: `jdbc:h2:file:./data/advisor`, user `sa`, blank password)
+
+The chat and organizer endpoints require an OpenAI API key. Without it, the service still starts normally and these endpoints return `503 AI_NOT_CONFIGURED`.
+
+```bash
+export OPENAI_API_KEY="your-key"
+# Optional: OPENAI_MODEL=gpt-4.1-mini
+mvn spring-boot:run
+```
 
 ## API quick start
 
-Create a farm in Jordan:
+Create a farm:
 
 ```http
 POST /api/v1/farms
@@ -53,54 +53,77 @@ Content-Type: application/json
 }
 ```
 
-Request advice (replace `1` with the returned farm id):
+Request Arabic advice (replace `1` with the returned farm id):
 
 ```http
 POST /api/v1/farms/1/advice?lang=ar
 ```
 
-Optionally ask the rules to evaluate selected crops only:
+Optionally restrict evaluation to crops supported by the pack:
 
 ```http
 POST /api/v1/farms/1/advice?lang=ar&crops=WHEAT&crops=LENTIL
 ```
 
-The browser asks permission before reading device location. If location access is unavailable, enter latitude and longitude manually. Crop names can be entered freely; this does not add agronomy data. A name absent from the active pack is reported as `NO_PACK_DATA` and receives no recommendation.
+Salinity assessment by location:
 
-Other endpoints:
+```http
+GET /api/v1/reference/salinity?lat=31.95&lon=35.91
+```
+
+AI chat and data organization:
+
+```http
+POST /api/v1/assistant/chat
+Content-Type: application/json
+
+{"message":"اشرح لي التوصية"}
+```
+
+```http
+POST /api/v1/assistant/organize
+Content-Type: application/json
+
+{"text":"المزرعة في السلط، مروي بالتنقيط، زرعت قمح الموسم الماضي"}
+```
+
+The organizer returns suggested structured fields for user review; it never writes them into the farm record implicitly.
 
 | Method | Path | Purpose |
 |---|---|---|
 | GET | `/api/v1/farms?page=0&size=20` | List farms |
 | GET / PUT / DELETE | `/api/v1/farms/{id}` | Read, replace, or erase a farm |
+| POST | `/api/v1/farms/{id}/advice` | Generate and save advice |
 | GET | `/api/v1/farms/{id}/decisions` | Decision history |
-| GET | `/api/v1/decisions/{id}` | Read one decision |
-| PATCH | `/api/v1/decisions/{id}` | Record farmer action |
+| GET / PATCH | `/api/v1/decisions/{id}` | Read a decision / record farmer action |
 | GET | `/api/v1/reference/packs` | List knowledge packs |
 | GET | `/api/v1/reference/crops` | List crops |
-| GET | `/api/v1/reference/coverage?lat=31.95&lon=35.91` | Check pack coverage |
+| GET | `/api/v1/reference/coverage?lat=31.95&lon=35.91` | Check crop pack coverage |
+| GET | `/api/v1/reference/salinity?lat=31.95&lon=35.91` | Estimate regional salinity class |
+| POST | `/api/v1/assistant/chat` | Ask the AI using optional farm/advice context |
+| POST | `/api/v1/assistant/organize` | Convert free text to a reviewable farm-data draft |
 
-Action body example:
+## Salinity data limits
 
-```json
-{ "action": "PLANTED", "cropCode": "WHEAT" }
-```
+The built-in regional reference contains raster classes rather than laboratory measurements and has coarse published resolution. It is shown as regional context only. Advice warns when the farm has no measured salinity and never treats a map class as a numeric soil conductivity measurement. Enter lab salinity in dS/m when available; the user can also override the categorical map result.
+
+## NASA data integration
+
+The `ClimateProvider` interface remains the integration boundary. Replace the demonstration fixture with a provider that reads the NASA dataset after the team supplies it, then confirm coordinates, variables, units, date window, and missing-value rules. Until then, fixture values are clearly marked in advice and force low confidence.
 
 ## Project structure
 
 ```text
 src/main/java/jo/orbitfarm/advisor/
-  advice/      advice orchestration and response
-  api/         shared errors
-  climate/     climate provider abstraction and demo fixture
+  advice/      advice orchestration and rule evaluation
+  assistant/   chat and structured farm-data organizer
+  climate/     provider interface, demo fixture, and GDD calculator
   decision/    decision history and farmer actions
-  farm/        farm entity, persistence, service, and API
-  pack/        JSON pack model, catalog, and reference API
+  farm/        farm entity, persistence, and API
+  pack/        JSON pack model, validation, catalog, and reference API
+  salinity/    categorical regional map lookup and assessment
 src/main/resources/
   db/migration/  Flyway schema
   packs/         illustrative crop pack
+  salinity/      attributed regional salinity raster
 ```
-
-## Next integration step
-
-Keep the `ClimateProvider` interface and replace the fixture implementation with a NASA POWER provider once the team receives the approved variables, units, season window, and source data. Replace `jordan-demo.json` with reviewed pack data and confirm the thresholds with the team before treating the rules as final. The current `nasa` Spring profile is intentionally not implemented yet.

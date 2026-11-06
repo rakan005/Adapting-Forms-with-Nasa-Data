@@ -14,8 +14,12 @@ public record CropPack(String code, String name, String scope, int priority, Str
     public record MonthWindow(int startMonth, int endMonth) {
         public boolean includes(int month) { return startMonth <= endMonth ? month >= startMonth && month <= endMonth : month >= startMonth || month <= endMonth; }
     }
+    public record PhaseLimit(String stage, int startMonth, int endMonth, int heatLimitC) {
+        public boolean includes(int month) { return startMonth <= endMonth ? month >= startMonth && month <= endMonth : month >= startMonth || month <= endMonth; }
+    }
     public record Crop(String code, String nameEn, String nameAr, String family, BigDecimal salinityLimitDsm,
                        String waterDemand, boolean requiresIrrigation, int heatLimitC, boolean legume,
-                       List<MonthWindow> sowingWindows) {}
+                       List<MonthWindow> sowingWindows, List<PhaseLimit> phaseLimits,
+                       BigDecimal gddBaseTempC, BigDecimal gddUpperTempC) {}
     public record Thresholds(int rainDeficitPercent, BigDecimal heatMarginC, BigDecimal nitrogenBoost) {}
 }

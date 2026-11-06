@@ -14,14 +14,22 @@ public class PackCatalog {
         List<CropPack> loaded = new ArrayList<>();
         try {
             Resource[] resources = resolver.getResources(location.endsWith("/") ? location + "*.json" : location + "/*.json");
-            for (Resource resource : resources) loaded.add(mapper.readValue(resource.getInputStream(), CropPack.class));
+            List<String> problems = new ArrayList<>();
+            for (Resource resource : resources) {
+                CropPack pack = mapper.readValue(resource.getInputStream(), CropPack.class);
+                List<String> errors = PackValidator.validate(pack);
+                if (!errors.isEmpty()) problems.add(resource.getFilename() + ": " + String.join("; ", errors));
+                else loaded.add(pack);
+            }
+            if (!problems.isEmpty()) throw new IllegalStateException("Invalid crop pack(s): " + String.join(" | ", problems));
+            if (loaded.isEmpty()) throw new IllegalStateException("No crop pack files were found at " + location);
         } catch (Exception ex) {
             throw new IllegalStateException("Could not load crop knowledge packs from " + location, ex);
         }
         this.packs = List.copyOf(loaded);
     }
     public List<CropPack> all() { return packs; }
-    public List<CropPack> active() { return packs.stream().filter(p -> "REVIEWED".equals(p.status()) || "APPROVED".equals(p.status())).toList(); }
+    public List<CropPack> active() { return packs.stream().filter(p -> "REVIEWED".equals(p.status())).toList(); }
     public Optional<CropPack> find(String code) { return packs.stream().filter(p -> p.code().equalsIgnoreCase(code)).findFirst(); }
     public Optional<CropPack> resolve(java.math.BigDecimal lat, java.math.BigDecimal lon) {
         return active().stream().filter(p -> p.regions() != null && p.regions().stream().anyMatch(r -> r.contains(lat, lon)))

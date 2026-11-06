@@ -17,6 +17,7 @@ public class FarmEntity {
     @Column(name = "elevation_m") private Integer elevationM;
     private String irrigation;
     @Column(name = "salinity_dsm", precision = 8, scale = 3) private BigDecimal salinityDsm;
+    @Enumerated(EnumType.STRING) @Column(name = "salinity_class_override", length = 32) private jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride;
     @Column(name = "soil_depth") private String soilDepth;
     @Column(name = "previous_crop_code") private String previousCropCode;
     @Column(name = "created_at", nullable = false) private Instant createdAt;
@@ -25,13 +26,15 @@ public class FarmEntity {
     protected FarmEntity() {}
 
     public FarmEntity(String name, BigDecimal latitude, BigDecimal longitude, Integer elevationM,
-                      String irrigation, BigDecimal salinityDsm, String soilDepth, String previousCropCode) {
+                      String irrigation, BigDecimal salinityDsm, jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
+                      String soilDepth, String previousCropCode) {
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
         this.elevationM = elevationM;
         this.irrigation = irrigation;
         this.salinityDsm = salinityDsm;
+        this.salinityClassOverride = salinityClassOverride;
         this.soilDepth = soilDepth;
         this.previousCropCode = previousCropCode;
     }
@@ -45,15 +48,17 @@ public class FarmEntity {
     public Integer getElevationM() { return elevationM; }
     public String getIrrigation() { return irrigation; }
     public BigDecimal getSalinityDsm() { return salinityDsm; }
+    public jo.orbitfarm.advisor.salinity.SalinityClass getSalinityClassOverride() { return salinityClassOverride; }
     public String getSoilDepth() { return soilDepth; }
     public String getPreviousCropCode() { return previousCropCode; }
     public Instant getCreatedAt() { return createdAt; }
     public Instant getUpdatedAt() { return updatedAt; }
 
     public void update(String name, BigDecimal latitude, BigDecimal longitude, Integer elevationM,
-                       String irrigation, BigDecimal salinityDsm, String soilDepth, String previousCropCode) {
+                       String irrigation, BigDecimal salinityDsm, jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
+                       String soilDepth, String previousCropCode) {
         this.name = name; this.latitude = latitude; this.longitude = longitude; this.elevationM = elevationM;
-        this.irrigation = irrigation; this.salinityDsm = salinityDsm; this.soilDepth = soilDepth;
+        this.irrigation = irrigation; this.salinityDsm = salinityDsm; this.salinityClassOverride = salinityClassOverride; this.soilDepth = soilDepth;
         this.previousCropCode = previousCropCode;
     }
 }

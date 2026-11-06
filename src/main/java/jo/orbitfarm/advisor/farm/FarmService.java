@@ -16,7 +16,7 @@ public class FarmService {
     @Transactional
     public FarmResponse create(FarmRequest r) {
         return FarmResponse.from(farms.save(new FarmEntity(r.name(), r.latitude(), r.longitude(), r.elevationM(),
-                r.irrigation(), r.salinityDsm(), r.soilDepth(), r.previousCropCode())));
+                r.irrigation(), r.salinityDsm(), r.salinityClassOverride(), r.soilDepth(), r.previousCropCode())));
     }
     @Transactional(readOnly = true)
     public FarmEntity require(Long id) { return farms.findById(id).orElseThrow(() -> ApiException.notFound("Farm " + id)); }
@@ -30,7 +30,7 @@ public class FarmService {
     @Transactional
     public FarmResponse update(Long id, FarmRequest r) {
         FarmEntity farm = require(id);
-        farm.update(r.name(), r.latitude(), r.longitude(), r.elevationM(), r.irrigation(), r.salinityDsm(), r.soilDepth(), r.previousCropCode());
+        farm.update(r.name(), r.latitude(), r.longitude(), r.elevationM(), r.irrigation(), r.salinityDsm(), r.salinityClassOverride(), r.soilDepth(), r.previousCropCode());
         return FarmResponse.from(farms.save(farm));
     }
     @Transactional

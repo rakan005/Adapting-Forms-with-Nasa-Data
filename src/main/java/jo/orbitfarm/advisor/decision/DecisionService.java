@@ -33,7 +33,8 @@ public class DecisionService {
     public AdviceResponse recordAction(Long id, ActionRequest request) {
         DecisionRecordEntity record = records.findById(id).orElseThrow(() -> ApiException.notFound("Decision " + id));
         String cropCode = request.cropCode() == null ? null : request.cropCode().toUpperCase(Locale.ROOT);
-        if ("PLANTED".equals(request.action()) && (cropCode == null || packs.crops().stream().noneMatch(c -> c.code().equalsIgnoreCase(cropCode)))) {
+        String requestedCropCode = cropCode;
+        if ("PLANTED".equals(request.action()) && (requestedCropCode == null || packs.crops().stream().noneMatch(c -> c.code().equalsIgnoreCase(requestedCropCode)))) {
             throw new ApiException(HttpStatus.BAD_REQUEST, "UNKNOWN_CROP", "A valid cropCode is required when action is PLANTED");
         }
         if (!"PLANTED".equals(request.action())) cropCode = null;

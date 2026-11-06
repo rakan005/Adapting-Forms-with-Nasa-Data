@@ -10,6 +10,7 @@ public record FarmRequest(
         @Min(-500) @Max(9000) Integer elevationM,
         @Pattern(regexp = "NONE|LIMITED|FULL", message = "must be NONE, LIMITED, or FULL") String irrigation,
         @DecimalMin("0.0") @DecimalMax("100.0") BigDecimal salinityDsm,
+        jo.orbitfarm.advisor.salinity.SalinityClass salinityClassOverride,
         @Size(max = 30) String soilDepth,
         @Size(max = 40) String previousCropCode
 ) {}

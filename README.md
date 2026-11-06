@@ -32,7 +32,7 @@ The chat and organizer endpoints use Gemini via Google AI Studio. Without a Gemi
 
 ```bash
 export GEMINI_API_KEY="your-key"
-# Optional: GEMINI_MODEL=gemini-2.5-flash
+# Optional: GEMINI_MODEL=gemini-3.5-flash-lite
 mvn spring-boot:run
 ```
 

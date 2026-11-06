@@ -29,7 +29,7 @@ springdoc:
 advisor:
   ai:
     api-key: ${GEMINI_API_KEY:}
-    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    model: ${GEMINI_MODEL:gemini-3.5-flash-lite}
     base-url: ${GEMINI_GENERATE_CONTENT_URL:https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent}
   climate:
     provider: fixture

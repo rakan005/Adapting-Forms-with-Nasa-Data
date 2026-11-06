@@ -16,6 +16,8 @@ import jo.orbitfarm.advisor.salinity.SalinityService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -29,6 +31,7 @@ import java.util.regex.Pattern;
 
 @Service
 public class AiAssistantService {
+    private static final Logger log = LoggerFactory.getLogger(AiAssistantService.class);
     private static final Pattern MEASURED_SALINITY = Pattern.compile("(?i)(dS\\s*/\\s*m|ECe|measured|lab|مختبر|فحص)");
     private static final Set<String> IRRIGATION_VALUES = Set.of("NONE", "LIMITED", "FULL");
     private static final Set<String> SALINITY_VALUES = Set.of("NON_SALINE", "SLIGHTLY_SALINE", "MODERATELY_SALINE", "HIGHLY_SALINE", "EXTREMELY_SALINE");
@@ -44,7 +47,7 @@ public class AiAssistantService {
     private final SalinityService salinity;
 
     public AiAssistantService(@Value("${advisor.ai.api-key:}") String apiKey,
-                              @Value("${advisor.ai.model:gemini-2.5-flash}") String model,
+                              @Value("${advisor.ai.model:gemini-3.5-flash-lite}") String model,
                               @Value("${advisor.ai.base-url:https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent}") String baseUrl,
                               ObjectMapper mapper, FarmService farms, DecisionService decisions,
                               PackCatalog packs, SalinityService salinity) {
@@ -187,7 +190,11 @@ public class AiAssistantService {
             return mapper.readTree(text);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt(); throw providerError("AI request was interrupted");
-        } catch (IOException | IllegalArgumentException e) {
+        } catch (IOException e) {
+            log.warn("Gemini request I/O failed: {}", e.toString());
+            throw providerError("Could not reach or parse the AI provider response");
+        } catch (IllegalArgumentException e) {
+            log.warn("Gemini request or response parsing failed: {}", e.toString());
             throw providerError("Could not reach or parse the AI provider response");
         }
     }

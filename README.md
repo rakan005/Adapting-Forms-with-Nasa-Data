@@ -28,11 +28,11 @@ The service listens on `http://localhost:8080`.
 - Health: `http://localhost:8080/actuator/health`
 - H2 console: `http://localhost:8080/h2-console` (default JDBC URL: `jdbc:h2:file:./data/advisor`, user `sa`, blank password)
 
-The chat and organizer endpoints require an OpenAI API key. Without it, the service still starts normally and these endpoints return `503 AI_NOT_CONFIGURED`.
+The chat and organizer endpoints use Gemini via Google AI Studio. Without a Gemini API key, the service still starts normally and these endpoints return `503 AI_NOT_CONFIGURED`.
 
 ```bash
-export OPENAI_API_KEY="your-key"
-# Optional: OPENAI_MODEL=gpt-4.1-mini
+export GEMINI_API_KEY="your-key"
+# Optional: GEMINI_MODEL=gemini-2.5-flash
 mvn spring-boot:run
 ```
 

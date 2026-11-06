@@ -44,8 +44,8 @@ public class AiAssistantService {
     private final SalinityService salinity;
 
     public AiAssistantService(@Value("${advisor.ai.api-key:}") String apiKey,
-                              @Value("${advisor.ai.model:gpt-4.1-mini}") String model,
-                              @Value("${advisor.ai.base-url:https://api.openai.com/v1/responses}") String baseUrl,
+                              @Value("${advisor.ai.model:gemini-2.5-flash}") String model,
+                              @Value("${advisor.ai.base-url:https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent}") String baseUrl,
                               ObjectMapper mapper, FarmService farms, DecisionService decisions,
                               PackCatalog packs, SalinityService salinity) {
         this.apiKey = apiKey == null ? "" : apiKey.trim(); this.model = model; this.baseUrl = baseUrl;
@@ -156,17 +156,33 @@ public class AiAssistantService {
 
     private JsonNode call(String schemaName, JsonNode schema, ArrayNode input) {
         ObjectNode requestBody = mapper.createObjectNode();
-        requestBody.put("model", model); requestBody.set("input", input); requestBody.put("max_output_tokens", 1200);
-        ObjectNode format = requestBody.putObject("text").putObject("format");
-        format.put("type", "json_schema"); format.put("name", schemaName); format.put("strict", true); format.set("schema", schema);
+        ObjectNode systemInstruction = requestBody.putObject("systemInstruction");
+        ArrayNode systemParts = systemInstruction.putArray("parts");
+        ArrayNode contents = requestBody.putArray("contents");
+        for (JsonNode item : input) {
+            String role = item.path("role").asText("user");
+            String content = item.path("content").asText("");
+            if ("system".equals(role)) {
+                systemParts.addObject().put("text", content);
+            } else {
+                ObjectNode message = contents.addObject();
+                message.put("role", "assistant".equals(role) ? "model" : "user");
+                message.putArray("parts").addObject().put("text", content);
+            }
+        }
+        ObjectNode generation = requestBody.putObject("generationConfig");
+        generation.put("maxOutputTokens", 1200);
+        generation.put("responseMimeType", "application/json");
+        generation.set("responseJsonSchema", schema);
         try {
-            HttpRequest request = HttpRequest.newBuilder(URI.create(baseUrl)).timeout(Duration.ofSeconds(35))
-                    .header("Authorization", "Bearer " + apiKey).header("Content-Type", "application/json")
+            String endpoint = baseUrl.replace("{model}", model);
+            HttpRequest request = HttpRequest.newBuilder(URI.create(endpoint)).timeout(Duration.ofSeconds(35))
+                    .header("x-goog-api-key", apiKey).header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(mapper.writeValueAsString(requestBody))).build();
             HttpResponse<String> response = http.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() < 200 || response.statusCode() >= 300) throw providerError("AI provider returned HTTP " + response.statusCode());
             JsonNode body = mapper.readTree(response.body());
-            String text = extractOutputText(body);
+            String text = extractGeminiText(body);
             if (text.isBlank()) throw providerError("AI provider did not return structured output");
             return mapper.readTree(text);
         } catch (InterruptedException e) {
@@ -176,12 +192,13 @@ public class AiAssistantService {
         }
     }
 
-    private String extractOutputText(JsonNode body) {
-        String direct = body.path("output_text").asText("");
-        if (!direct.isBlank()) return direct;
+    private String extractGeminiText(JsonNode body) {
         StringBuilder text = new StringBuilder();
-        for (JsonNode item : body.path("output")) for (JsonNode content : item.path("content")) {
-            if ("output_text".equals(content.path("type").asText())) text.append(content.path("text").asText());
+        for (JsonNode candidate : body.path("candidates")) {
+            for (JsonNode part : candidate.path("content").path("parts")) {
+                if (part.hasNonNull("text")) text.append(part.path("text").asText());
+            }
+            if (!text.isEmpty()) break;
         }
         return text.toString();
     }
@@ -193,7 +210,7 @@ public class AiAssistantService {
     private String upperOrNull(String value) { return value == null ? null : value.trim().toUpperCase(Locale.ROOT); }
     private List<String> strings(JsonNode node) { if (node == null || !node.isArray()) return List.of(); List<String> out = new ArrayList<>(); node.forEach(n -> { if (n.isTextual() && !n.asText().isBlank()) out.add(n.asText().trim()); }); return out; }
     private void addIfMissing(List<String> values, String value) { if (!values.contains(value)) values.add(value); }
-    private void requireConfigured() { if (apiKey.isBlank()) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED", "Set OPENAI_API_KEY to enable the AI assistant"); }
+    private void requireConfigured() { if (apiKey.isBlank()) throw new ApiException(HttpStatus.SERVICE_UNAVAILABLE, "AI_NOT_CONFIGURED", "Set GEMINI_API_KEY to enable the AI assistant"); }
     private ApiException providerError(String message) { return new ApiException(HttpStatus.BAD_GATEWAY, "AI_PROVIDER_UNAVAILABLE", message); }
 
     public record ChatResponse(String reply, List<String> followUpQuestions, List<String> dataUsed, String dataWarning) {}

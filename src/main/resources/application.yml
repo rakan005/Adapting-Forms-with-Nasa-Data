@@ -28,9 +28,9 @@ springdoc:
 
 advisor:
   ai:
-    api-key: ${OPENAI_API_KEY:}
-    model: ${OPENAI_MODEL:gpt-4.1-mini}
-    base-url: ${OPENAI_RESPONSES_URL:https://api.openai.com/v1/responses}
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-2.5-flash}
+    base-url: ${GEMINI_GENERATE_CONTENT_URL:https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent}
   climate:
     provider: fixture
   packs:

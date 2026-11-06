@@ -32,7 +32,7 @@ public class AdviceService {
     }
 
     @Transactional
-    public AdviceResponse advise(Long farmId, LocalDate asOf, String language) {
+    public AdviceResponse advise(Long farmId, LocalDate asOf, String language, List<String> requestedCrops) {
         FarmEntity farm = farms.require(farmId);
         LocalDate date = asOf == null ? LocalDate.now(ZoneId.of("Asia/Amman")) : asOf;
         String lang = language == null ? "en" : language.toLowerCase(Locale.ROOT);
@@ -48,7 +48,16 @@ public class AdviceService {
         if (selected.isPresent()) {
             CropPack pack = selected.get();
             List<ScoredCrop> eligible = new ArrayList<>();
+            Set<String> requested = requestedCrops == null ? Set.of() : requestedCrops.stream()
+                    .filter(Objects::nonNull).map(String::trim).filter(s -> !s.isEmpty())
+                    .map(s -> s.toLowerCase(Locale.ROOT)).collect(java.util.stream.Collectors.toCollection(LinkedHashSet::new));
             for (CropPack.Crop crop : pack.crops()) {
+                if (!requested.isEmpty()) {
+                    boolean selectedByFarmer = requested.stream().anyMatch(value -> value.equals(crop.code().toLowerCase(Locale.ROOT))
+                            || value.equals(crop.nameEn().toLowerCase(Locale.ROOT))
+                            || value.equals(crop.nameAr().toLowerCase(Locale.ROOT)));
+                    if (!selectedByFarmer) continue;
+                }
                 if (crop.sowingWindows() != null && !crop.sowingWindows().isEmpty()
                         && crop.sowingWindows().stream().noneMatch(w -> w.includes(date.getMonthValue()))) {
                     exclusions.add(new AdviceResponse.Exclusion(crop.code(), "OUTSIDE_SOWING_WINDOW"));
@@ -102,6 +111,14 @@ public class AdviceService {
                 }
                 eligible.add(new ScoredCrop(crop, score, reasons, confirm));
             }
+            if (!requested.isEmpty()) {
+                for (String cropName : requested) {
+                    boolean known = pack.crops().stream().anyMatch(c -> cropName.equals(c.code().toLowerCase(Locale.ROOT))
+                            || cropName.equals(c.nameEn().toLowerCase(Locale.ROOT))
+                            || cropName.equals(c.nameAr().toLowerCase(Locale.ROOT)));
+                    if (!known) exclusions.add(new AdviceResponse.Exclusion(cropName, "NO_PACK_DATA"));
+                }
+            }
             if (ranked) eligible.sort(Comparator.comparingInt(ScoredCrop::score).reversed().thenComparing(x -> x.crop().code()));
             else eligible.sort(Comparator.comparing(x -> x.crop().code()));
             int rank = 1;
@@ -134,6 +151,6 @@ public class AdviceService {
         try { return mapper.writeValueAsString(value); }
         catch (JsonProcessingException e) { throw new IllegalStateException("Could not serialize advice response", e); }
     }
-    private boolean isPreviousCereal(String code) { return "WHEAT".equalsIgnoreCase(code) || "BARLEY".equalsIgnoreCase(code); }
+    private boolean isPreviousCereal(String code) { return code != null && ("WHEAT".equalsIgnoreCase(code) || "BARLEY".equalsIgnoreCase(code) || "قمح".equals(code.trim()) || "شعير".equals(code.trim())); }
     private record ScoredCrop(CropPack.Crop crop, int score, List<String> reasons, boolean confirm) {}
 }

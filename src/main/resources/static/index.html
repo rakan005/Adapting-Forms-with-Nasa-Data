@@ -28,16 +28,17 @@
       <form id="farmForm">
         <div class="fields">
           <div class="field full"><label for="farmName">اسم المزرعة</label><input id="farmName" maxlength="120" value="مزرعتي التجريبية" placeholder="مثال: مزرعة العائلة"></div>
-          <div class="field"><label for="lat">خط العرض Latitude</label><input id="lat" type="number" step="0.00001" min="-90" max="90" value="31.95" required></div>
-          <div class="field"><label for="lon">خط الطول Longitude</label><input id="lon" type="number" step="0.00001" min="-180" max="180" value="35.91" required></div>
+          <div class="field full"><label>موقع الأرض</label><button class="secondary" id="locateButton" type="button">📍 حدّد موقعي الحالي</button><span class="hint" id="locationStatus" role="status">نستخدم موقع الجهاز بعد إذنك. إذا تعذر، أدخل الإحداثيات يدويًا.</span></div>
+          <div class="field full"><label for="requestedCrop">محاصيل بدك تقيّمها (اختياري)</label><div class="actions"><input id="requestedCrop" list="cropSuggestions" maxlength="80" placeholder="اكتب أي اسم محصول ثم اضغط إضافة" style="flex:1"><button class="secondary" id="addCropButton" type="button">إضافة</button></div><datalist id="cropSuggestions"><option value="قمح"><option value="شعير"><option value="عدس"><option value="بندورة"><option value="حمص"><option value="زيتون"><option value="عنب"><option value="تفاح"><option value="بطاطا"><option value="ذرة"><option value="خيار"><option value="حمضيات"></datalist><div id="selectedCrops" class="actions" aria-live="polite"></div><span class="hint">تقدر تضيف أكثر من محصول. الأنواع غير الموجودة في الحزمة الحالية ستظهر كـ«بيانات غير متوفرة» بدون تخمين.</span></div>
           <div class="field"><label for="irrigation">توفر الري</label><select id="irrigation"><option value="">غير معروف</option><option value="NONE">لا يوجد</option><option value="LIMITED" selected>محدود</option><option value="FULL">متوفر</option></select></div>
           <div class="field"><label for="salinity">ملوحة التربة dS/m</label><input id="salinity" type="number" min="0" max="100" step="0.1" placeholder="اتركه فارغًا إذا غير معروف"></div>
-          <div class="field"><label for="previous">المحصول السابق</label><select id="previous"><option value="">غير معروف</option><option value="WHEAT" selected>قمح</option><option value="BARLEY">شعير</option><option value="OTHER">محصول آخر</option></select></div>
+          <div class="field"><label for="previous">المحصول السابق</label><input id="previous" list="cropSuggestions" maxlength="80" placeholder="اختياري — اكتب أي محصول"></div>
           <div class="field"><label for="elevation">الارتفاع (متر)</label><input id="elevation" type="number" min="-500" max="9000" placeholder="اختياري"></div>
+          <div class="field full"><details class="details"><summary>إدخال الإحداثيات يدويًا (اختياري)</summary><div class="fields" style="margin-top:10px"><div class="field"><label for="lat">خط العرض Latitude</label><input id="lat" type="number" step="0.00001" min="-90" max="90" placeholder="مثال: 31.95"></div><div class="field"><label for="lon">خط الطول Longitude</label><input id="lon" type="number" step="0.00001" min="-180" max="180" placeholder="مثال: 35.91"></div></div></details></div>
         </div>
         <button class="primary" type="submit" id="adviceButton">اعرض توصية تجريبية <span>←</span></button>
       </form>
-      <div class="api-row"><span class="api-status" id="modeStatus">الوضع الحالي: <b>عرض محلي تجريبي</b></span><button class="toggle" id="modeToggle" type="button">استخدام Java API</button></div>
+      <div class="api-row" id="apiRow"><span class="api-status" id="modeStatus">الوضع الحالي: <b>عرض محلي تجريبي</b></span><button class="toggle" id="modeToggle" type="button">استخدام Java API</button></div>
     </section>
     <section class="card" id="resultCard">
       <div class="card-head"><div><h3>نتيجة التوصية</h3><p class="sub">النتيجة هنا توضيحية لمعاينة تدفق النظام</p></div><span class="step">02 · النتيجة</span></div>
@@ -72,12 +73,16 @@
   const getHistory=()=>{try{return JSON.parse(localStorage.getItem('cropAdvisorHistory')||'[]')}catch{return []}};
   const setHistory=rows=>{try{localStorage.setItem('cropAdvisorHistory',JSON.stringify(rows))}catch{}}
   const showToast=msg=>{const t=$('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600)};
-  const readFarm=()=>({name:$('farmName').value.trim()||'مزرعة بدون اسم',latitude:Number($('lat').value),longitude:Number($('lon').value),irrigation:$('irrigation').value||null,salinityDsm:$('salinity').value===''?null:Number($('salinity').value),previousCropCode:$('previous').value||null,elevationM:$('elevation').value===''?null:Number($('elevation').value)});
+  const requestedCrops=[];
+  const readFarm=()=>({name:$('farmName').value.trim()||'مزرعة بدون اسم',latitude:$('lat').value===''?null:Number($('lat').value),longitude:$('lon').value===''?null:Number($('lon').value),irrigation:$('irrigation').value||null,salinityDsm:$('salinity').value===''?null:Number($('salinity').value),previousCropCode:$('previous').value.trim()||null,elevationM:$('elevation').value===''?null:Number($('elevation').value)});
   const inJordan=(f)=>f.latitude>=29&&f.latitude<=33.5&&f.longitude>=34.8&&f.longitude<=39.4;
-  function localAdvice(f){
+  function localAdvice(f,requested=[]){
     const month=new Date().getMonth()+1, eligible=[], exclusions=[], rules=[], advisories=[];
     let packCode=inJordan(f)?'JO-DEMO-01':null, level=packCode?2:0;
-    if(packCode){for(const c of crops){
+    const normalize=s=>String(s||'').trim().toLocaleLowerCase('ar');
+    const matches=(c,name)=>[c.code,c.en,c.ar].some(v=>normalize(v)===normalize(name));
+    const selected=requested.length?crops.filter(c=>requested.some(name=>matches(c,name))):crops;
+    if(packCode){for(const c of selected){
       if(!c.months.includes(month)){exclusions.push({code:c.code,reason:'خارج فترة الزراعة في ملف المثال'});if(!rules.includes('SOWING_WINDOW'))rules.push('SOWING_WINDOW');continue}
       let score=0,reasons=[],confirm=false;
       if(f.irrigation==='NONE'&&c.irrigation){exclusions.push({code:c.code,reason:'المحصول يحتاج إلى ري'});if(!rules.includes('IRRIGATION'))rules.push('IRRIGATION');continue}
@@ -86,9 +91,10 @@
       if(f.salinityDsm==null&&c.salinity<4){confirm=true;reasons.push('افحص ملوحة التربة');if(!rules.includes('SALINITY'))rules.push('SALINITY')}
       if(fixture.rain < -25&&c.water==='HIGH'){exclusions.push({code:c.code,reason:'طلب مائي مرتفع مع شذوذ مطري جاف في المثال'});advisories.push('تقليل كثافة البذار');if(!rules.includes('WATER_CONSERVATION'))rules.push('WATER_CONSERVATION');continue}
       if(fixture.trend>0&&fixture.max>c.heat){if(fixture.max-c.heat>2){exclusions.push({code:c.code,reason:'مؤشر الحرارة أعلى من الحد في المثال'});if(!rules.includes('HEAT_STRESS'))rules.push('HEAT_STRESS');continue}confirm=true;reasons.push('راجع تحمّل الصنف للحرارة');if(!rules.includes('HEAT_STRESS'))rules.push('HEAT_STRESS')}
-      if(['WHEAT','BARLEY'].includes((f.previousCropCode||'').toUpperCase())&&c.legume){score+=2;reasons.push('تناوب بقوليات بعد محصول حبوبي');if(!rules.includes('NITROGEN_RESTORATION'))rules.push('NITROGEN_RESTORATION')}
+      if(['WHEAT','BARLEY','قمح','شعير'].includes((f.previousCropCode||'').toUpperCase())&&c.legume){score+=2;reasons.push('تناوب بقوليات بعد محصول حبوبي');if(!rules.includes('NITROGEN_RESTORATION'))rules.push('NITROGEN_RESTORATION')}
       eligible.push({crop:c,score,reasons,confirm});
     }}
+    for(const name of requested)if(!crops.some(c=>matches(c,name)))exclusions.push({code:name,reason:'NO_PACK_DATA'});
     eligible.sort((a,b)=>b.score-a.score||a.crop.code.localeCompare(b.crop.code));
     return {farm:f,packCode,level,crops:eligible,exclusions,rules,advisories:[...new Set(advisories)],date:new Date().toISOString().slice(0,10)};
   }
@@ -99,11 +105,14 @@
     $('metrics').innerHTML=`<div class="metric"><small>الشذوذ المطري</small><strong>${Number(c.rainfallAnomalyPercent).toFixed(1)}%</strong><span>قيمة العرض التجريبي</span></div><div class="metric"><small>اتجاه الحرارة</small><strong>+${Number(c.maxTemperatureTrendC).toFixed(1)}°</strong><span>قيمة العرض التجريبي</span></div><div class="metric"><small>أعلى حرارة حديثة</small><strong>${Number(c.recentMaxTemperatureC).toFixed(1)}°</strong><span>درجة مئوية</span></div>`;
     const list=advice.crops||[];
     $('cropList').innerHTML=list.length?list.map((x,i)=>{const name=x.nameAr||x.crop?.ar||x.nameEn||x.crop?.en||x.code;const code=x.code||x.crop?.code;const reasons=(x.reasons||[]).join(' · ');return `<article class="crop"><div class="crop-main"><div class="crop-number">${x.rankNo||i+1}</div><div><h4>${esc(name)}</h4><p>${esc(code)}${reasons?' · '+esc(reasons):''}</p></div></div><span class="badge ${x.needsConfirmation||x.confirm?'confirm':'rank'}">${x.needsConfirmation||x.confirm?'يحتاج تأكيد':'مناسب مبدئيًا'}</span></article>`}).join(''):'<div class="no-crops">ما في محاصيل مقترحة لهذا الموقع أو الشهر ضمن ملف المثال. جرّب موقعًا داخل الأردن وتاريخًا في موسم الزراعة.</div>';
-    $('explanation').textContent=advice.explanation|| (advice.level===0?'لا تغطي حزمة المثال هذا الموقع؛ تظهر مؤشرات المناخ فقط.':'هذه نتيجة قواعد توضيحية. تأكد من ملاءمة المحصول مع مختص وبيانات محلية موثوقة.');
-    const ex=(advice.exclusions||[]).map(e=>`<li class="exclusion">${esc(e.cropCode||e.code)}: ${esc(e.reason)}</li>`).join('');
+    const unsupported=(advice.exclusions||[]).filter(e=>e.reason==='NO_PACK_DATA');
+    $('explanation').textContent=unsupported.length?`المحاصيل التالية غير متوفرة بياناتها في الحزمة الحالية: ${unsupported.map(e=>e.cropCode||e.code).join('، ')}. لم يتم تخمين توصية لها.`:(advice.explanation|| (advice.level===0?'لا تغطي حزمة المثال هذا الموقع؛ تظهر مؤشرات المناخ فقط.':'هذه نتيجة قواعد توضيحية. تأكد من ملاءمة المحصول مع مختص وبيانات محلية موثوقة.'));
+    const reasonText={NO_PACK_DATA:'لا توجد بيانات لهذا المحصول في الحزمة الحالية',OUTSIDE_SOWING_WINDOW:'خارج فترة الزراعة في ملف المثال',SOWING_WINDOW:'خارج فترة الزراعة في ملف المثال',IRRIGATION_UNAVAILABLE:'الري غير متوفر',SALINITY_LIMIT_EXCEEDED:'الملوحة تتجاوز الحد المسجل',HIGH_WATER_DEMAND_DURING_DRY_ANOMALY:'طلب مائي مرتفع وفق بيانات المثال',HEAT_LIMIT_EXCEEDED:'مؤشر الحرارة يتجاوز الحد في المثال'};
+    const ex=(advice.exclusions||[]).map(e=>`<li class="exclusion">${esc(e.cropCode||e.code)}: ${esc(reasonText[e.reason]||e.reason)}</li>`).join('');
     const rules=(advice.firedRules||advice.rules||[]).map(r=>`<li>${esc(r)}</li>`).join('');const adv=(advice.advisories||[]).map(r=>`<li>${esc(r)}</li>`).join('');
     $('rulesDetail').innerHTML=`${rules?'<b>قواعد اشتغلت</b><ul>'+rules+'</ul>':''}${ex?'<b>محاصيل مستبعدة</b><ul>'+ex+'</ul>':''}${adv?'<b>إرشادات</b><ul>'+adv+'</ul>':''}${!rules&&!ex&&!adv?'<p>لم تنطبق قواعد استبعاد في هذه النتيجة.</p>':''}`;
-    $('actionCrop').innerHTML='<option value="">اختر المحصول</option>'+list.map(x=>{const code=x.code||x.crop?.code,name=x.nameAr||x.crop?.ar||x.nameEn||code;return `<option value="${esc(code)}">${esc(name)}</option>`}).join('');
+    const actionOptions=[...list.map(x=>({code:x.code||x.crop?.code,name:x.nameAr||x.crop?.ar||x.nameEn||x.code})),...requestedCrops.map(name=>({code:name,name}))].filter((x,i,a)=>a.findIndex(y=>y.code===x.code)===i);
+    $('actionCrop').innerHTML='<option value="">اختر المحصول</option>'+actionOptions.map(x=>`<option value="${esc(x.code)}">${esc(x.name)}</option>`).join('');
     renderHistory();$('resultCard').scrollIntoView({behavior:'smooth',block:'nearest'});
   }
   function saveLocal(advice){const rows=getHistory();const entry={id:Date.now(),farmName:advice.farm.name,date:advice.date,packCode:advice.packCode,crops:(advice.crops||[]).map(x=>x.code||x.crop?.code),action:null};rows.unshift(entry);setHistory(rows.slice(0,15));return entry}
@@ -112,12 +121,18 @@
     let response;
     if(!backendFarmId){response=await fetch(base+'/api/v1/farms',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)});if(!response.ok)throw new Error('لم أستطع حفظ بيانات المزرعة في Java API');const saved=await response.json();backendFarmId=saved.id}
     else{response=await fetch(`${base}/api/v1/farms/${backendFarmId}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(f)});if(!response.ok)throw new Error('لم أستطع تحديث بيانات المزرعة في Java API')}
-    response=await fetch(`${base}/api/v1/farms/${backendFarmId}/advice?lang=ar`,{method:'POST'});
+    const query=new URLSearchParams({lang:'ar'});requestedCrops.forEach(name=>query.append('crops',name));
+    response=await fetch(`${base}/api/v1/farms/${backendFarmId}/advice?${query}`,{method:'POST'});
     if(!response.ok){const error=await response.json().catch(()=>({message:'تعذر جلب التوصية'}));throw new Error(error.message||'تعذر جلب التوصية')}
     return response.json();
   }
-  $('farmForm').addEventListener('submit',async e=>{e.preventDefault();const f=readFarm();if(!Number.isFinite(f.latitude)||!Number.isFinite(f.longitude)){showToast('تأكد من إدخال إحداثيات صحيحة');return}const btn=$('adviceButton');btn.disabled=true;btn.textContent=backendMode?'جاري الاتصال بالباك إند…':'جاري تجهيز النتيجة…';try{let advice;if(backendMode){advice=await getBackendAdvice(f)}else{advice=localAdvice(f);const record=saveLocal(advice);advice.localRecordId=record.id}render(advice);showToast(backendMode?'وصلت النتيجة من Java API':'تم إنشاء نتيجة العرض المحلي')}catch(err){showToast(err.message)}finally{btn.disabled=false;btn.innerHTML='اعرض توصية تجريبية <span>←</span>'}});
+  $('farmForm').addEventListener('submit',async e=>{e.preventDefault();const f=readFarm();if(!Number.isFinite(f.latitude)||!Number.isFinite(f.longitude)||f.latitude < -90||f.latitude > 90||f.longitude < -180||f.longitude > 180){$('locationStatus').textContent='حدد الموقع من الجهاز أو أدخل خط العرض والطول يدويًا.';document.querySelector('details.details').open=true;showToast('موقع المزرعة مطلوب');return}const btn=$('adviceButton');btn.disabled=true;btn.textContent=backendMode?'جاري الاتصال بالباك إند…':'جاري تجهيز النتيجة…';try{let advice;if(backendMode){advice=await getBackendAdvice(f)}else{advice=localAdvice(f,requestedCrops);const record=saveLocal(advice);advice.localRecordId=record.id}render(advice);showToast(backendMode?'وصلت النتيجة من Java API':'تم إنشاء نتيجة العرض المحلي')}catch(err){showToast(err.message)}finally{btn.disabled=false;btn.innerHTML='اعرض توصية تجريبية <span>←</span>'}});
   $('modeToggle').addEventListener('click',()=>{backendMode=!backendMode;backendFarmId=null;$('modeToggle').classList.toggle('active',backendMode);$('modeToggle').textContent=backendMode?'العودة للعرض المحلي':'استخدام Java API';$('modeStatus').innerHTML=backendMode?'الوضع الحالي: <b>Java API — شغّل Spring Boot أولًا</b>':'الوضع الحالي: <b>عرض محلي تجريبي</b>';showToast(backendMode?'اتصال Java API يعمل فقط عند فتح الصفحة من خادم Spring Boot':'تم الرجوع للعرض المحلي')});
+  $('locateButton').addEventListener('click',()=>{if(!navigator.geolocation){$('locationStatus').textContent='المتصفح لا يدعم تحديد الموقع؛ استخدم الإحداثيات اليدوية.';document.querySelector('details.details').open=true;return}$('locationStatus').textContent='بانتظار إذن الموقع…';navigator.geolocation.getCurrentPosition(pos=>{$('lat').value=pos.coords.latitude.toFixed(5);$('lon').value=pos.coords.longitude.toFixed(5);$('locationStatus').textContent=`تم تحديد الموقع بدقة تقريبية ${Math.round(pos.coords.accuracy)} متر.`;showToast('تم تحديد موقع الأرض')},err=>{$('locationStatus').textContent=err.code===1?'لم تسمح بالوصول للموقع؛ أدخل الإحداثيات يدويًا.':'تعذر تحديد الموقع؛ أدخل الإحداثيات يدويًا.';document.querySelector('details.details').open=true},{enableHighAccuracy:true,timeout:12000,maximumAge:60000})});
+  function renderSelectedCrops(){$('selectedCrops').innerHTML=requestedCrops.map((name,i)=>`<span class="badge">${esc(name)} <button type="button" data-remove-crop="${i}" aria-label="حذف ${esc(name)}" style="border:0;background:transparent;color:inherit;cursor:pointer">×</button></span>`).join('');document.querySelectorAll('[data-remove-crop]').forEach(b=>b.addEventListener('click',()=>{requestedCrops.splice(Number(b.dataset.removeCrop),1);renderSelectedCrops()}))}
+  function addCrop(){const value=$('requestedCrop').value.trim();if(!value)return;if(!requestedCrops.some(x=>x.toLocaleLowerCase('ar')===value.toLocaleLowerCase('ar')))requestedCrops.push(value);$('requestedCrop').value='';renderSelectedCrops()}
+  $('addCropButton').addEventListener('click',addCrop);$('requestedCrop').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();addCrop()}});
+  if(!['localhost','127.0.0.1','::1'].includes(location.hostname))$('apiRow').style.display='none';
   function recordAction(action){if(!currentAdvice){showToast('اعرض توصية أولًا');return}const cropCode=action==='PLANTED'?$('actionCrop').value:null;if(action==='PLANTED'&&!cropCode){showToast('اختر المحصول الذي زرعته');return}if(backendMode&&currentAdvice.decisionId){fetch(`${location.origin}/api/v1/decisions/${currentAdvice.decisionId}`,{method:'PATCH',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,cropCode})}).then(r=>{if(!r.ok)throw new Error();showToast('تم تسجيل الإجراء في Java API')}).catch(()=>showToast('تعذر تسجيل الإجراء في Java API'));return}const rows=getHistory();const row=rows.find(x=>x.id===currentAdvice.localRecordId);if(row){row.action=action;row.cropCode=cropCode;setHistory(rows);renderHistory()}showToast(action==='PLANTED'?'تم تسجيل المحصول المزروع':'تم تسجيل ترك الأرض بورًا')}
   $('plantButton').addEventListener('click',()=>recordAction('PLANTED'));$('fallowButton').addEventListener('click',()=>recordAction('FALLOW'));
   function renderHistory(){const rows=getHistory();$('historyList').innerHTML=rows.length?rows.map(x=>`<div class="history-row"><div><b>${esc(x.farmName)}</b><small>${esc(x.date)} · ${esc(x.packCode||'دون حزمة محلية')}</small></div><div>${x.action?`<span class="badge">${x.action==='PLANTED'?'زرع '+esc(x.cropCode):'ترك الأرض بورًا'}</span>`:`<div class="history-actions"><button data-replay="${x.id}">إعادة عرض</button></div>`}</div></div>`).join(''):'<div class="no-crops">لسه ما في قرارات محفوظة. النتائج المحلية تنحفظ على هذا الجهاز فقط.</div>';document.querySelectorAll('[data-replay]').forEach(b=>b.addEventListener('click',()=>{const row=rows.find(x=>String(x.id)===b.dataset.replay);if(row){$('farmName').value=row.farmName;$('farmForm').requestSubmit()}}))}

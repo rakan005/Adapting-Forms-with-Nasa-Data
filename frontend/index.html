@@ -132,6 +132,39 @@
   [data-theme="dark"] .home-facts .confidence-metric,[data-theme="dark"] .home-data-note,[data-theme="dark"] .home-crop,[data-theme="dark"] .rotation-season,[data-theme="dark"] .rotation-part,[data-theme="dark"] .rotation-benefit-grid article,[data-theme="dark"] .map-in-home{background:#0e1a2d;border-color:#2b3c55;color:#c3d2e8}[data-theme="dark"] .home-crop b,[data-theme="dark"] .rotation-season b,[data-theme="dark"] .rotation-part b,[data-theme="dark"] .rotation-benefit-grid b{color:#e6f1ff}[data-theme="dark"] .home-crop small,[data-theme="dark"] .rotation-season small,[data-theme="dark"] .rotation-part small,[data-theme="dark"] .rotation-benefit-grid p,[data-theme="dark"] .home-data-note,[data-theme="dark"] .rotation-status{color:#a6b8ce}[data-theme="dark"] .home-empty{border-color:#344b66;color:#aabbd1}[data-theme="dark"] .rotation-area-heading{border-color:#2b3c55}[data-theme="dark"] .rotation-allocation{background:#1b2d43}[data-theme="dark"] .rotation-status[data-state="good"]{color:#8cddb0}[data-theme="dark"] .rotation-status[data-state="error"]{color:#ff9299}
   @media(max-width:900px){.home-overview{grid-template-columns:1fr}.home-map-card{grid-row:auto}.home-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
   @media(max-width:600px){.app-nav{margin-bottom:12px;padding:5px;gap:4px}.app-nav-button{flex:1;min-height:42px;padding:8px 7px;font-size:12px;gap:5px}.home-overview{gap:12px;margin:12px 0}.home-facts{grid-template-columns:repeat(2,minmax(0,1fr))}.home-crop-list,.rotation-seasons,.rotation-areas,.rotation-benefit-grid{grid-template-columns:1fr}.rotation-season,.rotation-part{align-items:flex-start}.rotation-season select{max-width:48%}.rotation-area-input{max-width:50%}.home-map-card #salinityMap{height:270px}.page-heading p{font-size:13px}}
+</style><style id="dark-mode-fixes-v2">
+  [data-theme="dark"] select option,[data-theme="dark"] datalist option{background:#0e1a2d;color:#eff5ff}
+  [data-theme="dark"] .auth-tabs{border-color:#2b3c55}
+  [data-theme="dark"] .auth-tab{background:transparent;color:#a9bad0}
+  [data-theme="dark"] .auth-tab.active{background:#172944;color:#d7eaff;border-color:#5b9de5}
+  [data-theme="dark"] .auth-status,[data-theme="dark"] .auth-plan-summary,[data-theme="dark"] .draft-fields{color:#c3d2e8}
+  [data-theme="dark"] .api-readiness{background:#0e1a2d;border-color:#344965;color:#b8c8dc}
+  [data-theme="dark"] .api-readiness[data-state="ok"]{border-color:#357e5c;color:#8de0b4}
+  [data-theme="dark"] .api-readiness[data-state="old"],[data-theme="dark"] .api-readiness[data-state="down"]{border-color:#806638;color:#f1d18a}
+  [data-theme="dark"] .coverage-status[data-state="good"]{border-color:#357e5c;color:#8de0b4}
+  [data-theme="dark"] .coverage-status[data-state="none"],[data-theme="dark"] .coverage-status[data-state="error"]{border-color:#806638;color:#f1d18a}
+  [data-theme="dark"] .data-status{background:#101e32;border-color:#344965;color:#c3d2e8}
+  [data-theme="dark"] .data-status[data-state="demo"]{border-color:#806638;color:#f1d18a}
+  [data-theme="dark"] .alert-row[data-severity="WARNING"]{border-right-color:#e4b858}
+  [data-theme="dark"] .alert-row[data-severity="HIGH"],[data-theme="dark"] .alert-row[data-severity="CRITICAL"]{border-right-color:#ff9299}
+  [data-theme="dark"] .safety-panel{background:#172438;border-color:#806638;color:#d6e1f0}
+  [data-theme="dark"] .safety-panel[data-severity="HIGH"]{border-color:#9d4d56}
+  [data-theme="dark"] .history-actions button,[data-theme="dark"] .text-button{color:#91c2ff}
+  [data-theme="dark"] .form-divider{border-color:#2b3c55}
+  [data-theme="dark"] .form-divider strong{color:#e6f1ff}
+  [data-theme="dark"] .form-divider span{color:#9aacc5}
+  [data-theme="dark"] .rotation-area-heading{border-color:#2b3c55}
+  [data-theme="dark"] .leaflet-popup-content-wrapper,[data-theme="dark"] .leaflet-popup-tip{background:#13223a;color:#eff5ff}
+  @media(prefers-reduced-motion:reduce){.app-nav-button{transition:none}}
+</style><style id="analysis-layout-fix">
+  #analysisPage>.analysis-main-grid{grid-template-columns:minmax(0,1fr);align-items:start;gap:16px}
+  #analysisPage #farmForm .fields{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:16px;row-gap:13px}
+  #analysisPage #farmForm .field.full{grid-column:1/-1}
+  .form-divider{display:flex;flex-direction:row;align-items:baseline;gap:10px;margin:7px 0 0;padding:0 0 8px;border-bottom:1px solid #dfe9e1}
+  .form-divider strong{color:#214e33;font-size:14px}.form-divider span{color:#667b6c;font-size:11px;font-weight:400}
+  #analysisPage #resultCard .empty{min-height:190px}
+  #analysisPage #mapSlotAnalysis #farmMapBundle #salinityMap{height:320px}
+  @media(max-width:600px){#analysisPage #farmForm .fields{grid-template-columns:1fr}.form-divider{align-items:flex-start;flex-direction:column;gap:2px}}
 </style></head>
 <body>
 <main class="shell">
@@ -162,7 +195,7 @@
   </section>
 
   <section class="home-overview" aria-label="ملخص المزرعة">
-    <article class="card home-map-card"><div class="card-head"><div><h3>خريطة الأرض</h3><p class="sub" id="homeLocationValue">حدد موقع المزرعة من الخريطة</p></div><span class="step">الموقع</span></div><div id="mapSlotHome"><div id="salinityMap" aria-label="خريطة اختيار الموقع وتقدير ملوحة التربة"></div><div class="map-legend"><span><i class="swatch" style="background:#308457"></i>غير مالحة</span><span><i class="swatch" style="background:#f0c14d"></i>ملوحة خفيفة</span><span><i class="swatch" style="background:#e07e2f"></i>متوسطة</span><span><i class="swatch" style="background:#b03934"></i>عالية</span></div><div id="areaSalinity" class="area-class" role="status">حدد نقطة على الخريطة لعرض التصنيف المناطقي التقريبي.</div><div class="source-note">طبقة ملوحة عالمية لعام 2016 بدقة منشورة 1 كم، تصنيف نموذجي بدقة تحقق 67–70%؛ ليست قياسًا مخبريًا ولا تحدد قيمة EC بوحدة dS/m. المصدر: <a href="https://geohub.data.undp.org/data/d65242be633be3fb99d5519831ea1744" target="_blank" rel="noopener">UNDP GeoHub</a>، <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. الخريطة الأساسية من OpenStreetMap؛ طلبات مربعات الخريطة تكشف لمزودها مساحة العرض التقريبية.</div></div><button type="button" class="secondary home-edit-button" data-open-page="analysis">تعديل موقع وبيانات الأرض</button></article>
+    <article class="card home-map-card"><div class="card-head"><div><h3>خريطة الأرض</h3><p class="sub" id="homeLocationValue">حدد موقع المزرعة من الخريطة</p></div><span class="step">الموقع</span></div><div id="mapSlotHome"><div id="farmMapBundle"><div id="salinityMap" aria-label="خريطة اختيار الموقع وتقدير ملوحة التربة"></div><div class="map-legend"><span><i class="swatch" style="background:#308457"></i>غير مالحة</span><span><i class="swatch" style="background:#f0c14d"></i>ملوحة خفيفة</span><span><i class="swatch" style="background:#e07e2f"></i>متوسطة</span><span><i class="swatch" style="background:#b03934"></i>عالية</span></div><div id="areaSalinity" class="area-class" role="status">حدد نقطة على الخريطة لعرض التصنيف المناطقي التقريبي.</div><div class="source-note">طبقة ملوحة عالمية لعام 2016 بدقة منشورة 1 كم، تصنيف نموذجي بدقة تحقق 67–70%؛ ليست قياسًا مخبريًا ولا تحدد قيمة EC بوحدة dS/m. المصدر: <a href="https://geohub.data.undp.org/data/d65242be633be3fb99d5519831ea1744" target="_blank" rel="noopener">UNDP GeoHub</a>، <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a>. الخريطة الأساسية من OpenStreetMap؛ طلبات مربعات الخريطة تكشف لمزودها مساحة العرض التقريبية.</div></div></div><button type="button" class="secondary home-edit-button" data-open-page="analysis">تعديل موقع وبيانات الأرض</button></article>
     <article class="card home-facts-card"><div class="card-head"><div><h3>المناخ والتربة</h3><p class="sub">ملخص آخر تحليل متاح للمزرعة</p></div><span class="step" id="homeClimateSource">بانتظار التحليل</span></div>
       <div class="home-facts">
         <div class="metric"><small>مساحة الأرض</small><strong id="homeAreaValue">غير محددة</strong><span>دونم أردني</span></div>
@@ -181,21 +214,25 @@
   </section>
   <section class="page-view" id="analysisPage" data-page-view="analysis" hidden>
     <header class="page-heading"><span class="eyebrow">البيانات والنتائج</span><h2>تحليل الأرض</h2><p>أدخل المساحة وخصائص التربة والموقع، ثم راجع المحاصيل المقترحة والثقة والأسباب والتحذيرات.</p></header>
-  <div class="grid">
+  <div class="grid analysis-main-grid">
     <section class="card">
       <div class="card-head"><div><h3>بيانات المزرعة</h3><p class="sub">الموقع يساعد على اختيار حزمة المحاصيل المناسبة</p></div><span class="step">01 · المزرعة</span></div>
       <form id="farmForm">
         <div class="fields">
+          <div class="form-divider field full"><strong>١. بيانات الأرض</strong><span>اختر المزرعة أو أدخل اسمها ومساحتها.</span></div>
           <div class="field full"><label for="farmSelector">الأرض الحالية</label><div class="actions"><select id="farmSelector" style="flex:1"><option value="">أرض جديدة</option></select><button class="secondary" type="button" id="newFarmButton">إضافة أرض</button></div></div>
           <div class="field full"><label for="farmName">اسم المزرعة</label><input id="farmName" maxlength="120" value="مزرعتي التجريبية" placeholder="مثال: مزرعة العائلة"></div>
           <div class="field full"><label for="areaDunum">مساحة الأرض (دونم أردني)</label><input id="areaDunum" type="number" min="0.01" max="100000" step="0.01" required placeholder="مثال: 12.5"><span class="hint">المساحة مطلوبة لحفظ الأرض. الدونم الأردني = 1,000 م².</span></div>
-          <div class="field full"><label>موقع الأرض</label><button class="secondary" id="locateButton" type="button">📍 حدّد موقعي الحالي</button><span class="hint" id="locationStatus" role="status">استخدم زر الموقع أو اضغط على الخريطة لاختيار مكان الأرض.</span><div class="coverage-status" id="coverageStatus" role="status">تغطية المحاصيل: بانتظار تحديد الموقع.</div><p class="hint map-in-home">تم نقل الخريطة إلى هذه الصفحة؛ استخدم زر الموقع أو انقر عليها لتحديد الأرض.</p></div>
-          <div class="field full"><label for="requestedCrop">محاصيل بدك تقيّمها (اختياري)</label><div class="actions"><input id="requestedCrop" list="cropSuggestions" maxlength="80" placeholder="اكتب أي اسم محصول ثم اضغط إضافة" style="flex:1"><button class="secondary" id="addCropButton" type="button">إضافة</button></div><datalist id="cropSuggestions"><option value="قمح"><option value="شعير"><option value="عدس"><option value="بندورة"><option value="حمص"><option value="زيتون"><option value="عنب"><option value="تفاح"><option value="بطاطا"><option value="ذرة"><option value="خيار"><option value="حمضيات"></datalist><div id="selectedCrops" class="actions" aria-live="polite"></div><span class="hint">تقدر تضيف أكثر من محصول. الأنواع غير الموجودة في الحزمة الحالية ستظهر كـ«بيانات غير متوفرة» بدون تخمين.</span></div>
+          <div class="form-divider field full"><strong>٢. موقع الأرض</strong><span>حدد موقع المزرعة على الخريطة أو استخدم موقعك الحالي.</span></div>
+          <div class="field full"><label>موقع الأرض</label><button class="secondary" id="locateButton" type="button">📍 حدّد موقعي الحالي</button><span class="hint" id="locationStatus" role="status">استخدم زر الموقع أو اضغط على الخريطة لاختيار مكان الأرض.</span><div class="coverage-status" id="coverageStatus" role="status">تغطية المحاصيل: بانتظار تحديد الموقع.</div><div id="mapSlotAnalysis"></div></div>
+          <div class="form-divider field full"><strong>٣. التربة والري</strong><span>أدخل قياس الملوحة إن توفر، وعدّل التصنيف المناطقي عند الحاجة.</span></div>
           <div class="field"><label for="irrigation">توفر الري</label><select id="irrigation"><option value="">غير معروف</option><option value="NONE">لا يوجد</option><option value="LIMITED" selected>محدود</option><option value="FULL">متوفر</option></select></div>
           <div class="field"><label for="salinity">ملوحة التربة المقاسة dS/m</label><input id="salinity" type="number" min="0" max="100" step="0.1" placeholder="نتيجة فحص مخبري إن توفرت"><span class="hint">أدخل نتيجة فحص التربة فقط. تصنيف الخريطة لا يتحول إلى رقم dS/m.</span></div>
           <div class="field"><label for="salinityClass">تعديل تصنيف الملوحة المناطقي</label><select id="salinityClass"><option value="">استخدم تقدير الخريطة</option><option value="NON_SALINE">غير مالحة</option><option value="SLIGHTLY_SALINE">ملوحة خفيفة</option><option value="MODERATELY_SALINE">ملوحة متوسطة</option><option value="HIGHLY_SALINE">ملوحة عالية</option><option value="EXTREMELY_SALINE">ملوحة عالية جدًا</option></select><span class="hint">اختياري — التعديل يبقى تصنيفًا فئويًا.</span></div>
           <div class="field"><label for="previous">المحصول السابق</label><input id="previous" list="cropSuggestions" maxlength="80" placeholder="اختياري — اكتب أي محصول"></div>
           <div class="field"><label for="elevation">الارتفاع (متر)</label><input id="elevation" type="number" min="-500" max="9000" placeholder="اختياري"></div>
+          <div class="form-divider field full"><strong>٤. المحاصيل والسياق الزراعي</strong><span>حدد المحاصيل المراد تقييمها وسجّل المحصول السابق.</span></div>
+          <div class="field full"><label for="requestedCrop">محاصيل بدك تقيّمها (اختياري)</label><div class="actions"><input id="requestedCrop" list="cropSuggestions" maxlength="80" placeholder="اكتب أي اسم محصول ثم اضغط إضافة" style="flex:1"><button class="secondary" id="addCropButton" type="button">إضافة</button></div><datalist id="cropSuggestions"><option value="قمح"><option value="شعير"><option value="عدس"><option value="بندورة"><option value="حمص"><option value="زيتون"><option value="عنب"><option value="تفاح"><option value="بطاطا"><option value="ذرة"><option value="خيار"><option value="حمضيات"></datalist><div id="selectedCrops" class="actions" aria-live="polite"></div><span class="hint">تقدر تضيف أكثر من محصول. الأنواع غير الموجودة في الحزمة الحالية ستظهر كـ«بيانات غير متوفرة» بدون تخمين.</span></div>
           <div class="field full"><details class="details"><summary>إدخال الإحداثيات يدويًا (اختياري)</summary><div class="fields" style="margin-top:10px"><div class="field"><label for="lat">خط العرض Latitude</label><input id="lat" type="number" step="0.00001" min="-90" max="90" placeholder="مثال: 31.95"></div><div class="field"><label for="lon">خط الطول Longitude</label><input id="lon" type="number" step="0.00001" min="-180" max="180" placeholder="مثال: 35.91"></div></div></details></div>
         </div>
         <button class="primary" type="submit" id="adviceButton">اعرض توصية تجريبية <span>←</span></button>
@@ -320,7 +357,7 @@
     status.textContent=!total?'أدخل مساحة الأرض من صفحة التحليل لبدء التقسيم.':sum>total?'مجموع الأجزاء أكبر من مساحة الأرض بـ '+(sum-total).toFixed(2)+' دونم.':Math.abs(sum-total)<.02?'التقسيم مكتمل: '+sum.toFixed(2)+' من '+total.toFixed(2)+' دونم.':'المتبقي للتوزيع: '+(total-sum).toFixed(2)+' دونم.';
   }
   function moveFarmMap(page){
-    const map=document.getElementById('salinityMap'),target=document.getElementById(page==='analysis'?'mapSlotAnalysis':'mapSlotHome');
+    const map=document.getElementById('farmMapBundle'),target=document.getElementById(page==='analysis'?'mapSlotAnalysis':'mapSlotHome');
     if(map&&target&&map.parentElement!==target){target.appendChild(map);setTimeout(()=>window.dispatchEvent(new Event('resize')),120)}
   }
   function showPage(name){

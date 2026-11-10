@@ -91,6 +91,38 @@
   @media(max-width:560px){.shell{padding:14px 12px 34px}.topbar{align-items:flex-start;gap:12px}.topbar-tools{align-items:flex-end;flex-direction:column;gap:6px}.brand-mark{width:40px;height:40px;border-radius:13px}.brand h1{font-size:15px}.brand small{font-size:10px}.demo-pill{font-size:9px;padding:5px 8px}.theme-toggle{height:30px;font-size:10px}.auth-copy{min-height:230px;padding:23px;border-radius:21px}.auth-copy h2{font-size:29px}.auth-copy p{font-size:13px}.auth-box{padding:16px;border-radius:18px}.hero{padding:23px 18px;border-radius:21px}.hero h2{font-size:28px}.hero p{font-size:13px}.hero-visual{padding:14px}.hero-flow{grid-template-columns:1fr}.hero-step{min-height:0}.plan-list{grid-template-columns:1fr}.card{padding:16px;border-radius:18px}.metrics{grid-template-columns:1fr 1fr}.metric{padding:10px}.metric strong{font-size:17px}.crop{align-items:flex-start}.actions{align-items:stretch}.account-bar{font-size:11px}}
   @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
 </style>
+<style id="dark-mode-polish">
+  [data-theme="dark"]{color-scheme:dark;--surface:#0b1220;--surface-elevated:#121e32;--text-primary:#eff5ff;--text-secondary:#c3d2e8;--text-muted:#9aacc5;--stroke:#2b3c55;--positive:#75d4a4;--negative:#ff9299;--warning:#f1c66f;--info:#80b9ff;--paper:#0b1220;--card:#121e32;--ink:#eff5ff;--muted:#9aacc5;--line:#2b3c55;--green:#69a9ff;--green2:#1a2f4c;--amber:#f1c66f;--amberbg:#30291e;--red:#ff9299;--redbg:#321f2a;--shadow:0 16px 42px #0005}
+  [data-theme="dark"] body{background:radial-gradient(ellipse at 8% 0,#162844 0,transparent 42%),linear-gradient(145deg,#0b1220,#0d1729 58%,#101b2e);color:var(--text-primary)}
+  [data-theme="dark"] .topbar{border-color:var(--stroke)}
+  [data-theme="dark"] .brand h1,[data-theme="dark"] .card h3,[data-theme="dark"] .plan-tile h4,[data-theme="dark"] .plan-price,[data-theme="dark"] .metric strong,[data-theme="dark"] .crop h4,[data-theme="dark"] .empty strong,[data-theme="dark"] .draft-fields b{color:var(--text-primary)}
+  [data-theme="dark"] .brand small,[data-theme="dark"] .sub,[data-theme="dark"] .billing-note,[data-theme="dark"] .hint,[data-theme="dark"] .api-status,[data-theme="dark"] .source-note,[data-theme="dark"] .map-legend,[data-theme="dark"] footer{color:var(--text-muted)}
+  [data-theme="dark"] .card,[data-theme="dark"] .auth-box,[data-theme="dark"] .hero-visual{background:var(--surface-elevated);border-color:var(--stroke);color:var(--text-primary);box-shadow:0 10px 28px #0002}
+  [data-theme="dark"] .hero-visual-head,[data-theme="dark"] .details,[data-theme="dark"] .api-row{border-color:var(--stroke)}
+  [data-theme="dark"] .hero-visual-head,[data-theme="dark"] .hero-step b,[data-theme="dark"] .section-title,[data-theme="dark"] .details summary{color:#b9d8ff}
+  [data-theme="dark"] .hero-visual-head span,[data-theme="dark"] .hero-step small,[data-theme="dark"] .crop p,[data-theme="dark"] .details ul{color:var(--text-muted)}
+  [data-theme="dark"] .hero-step,[data-theme="dark"] .metric,[data-theme="dark"] .plan-tile,[data-theme="dark"] .crop,[data-theme="dark"] .history-row,[data-theme="dark"] .season-row,[data-theme="dark"] .alert-row,[data-theme="dark"] input,[data-theme="dark"] select,[data-theme="dark"] textarea,[data-theme="dark"] .ai-textarea,[data-theme="dark"] .ai-output,[data-theme="dark"] .chat-log,[data-theme="dark"] .chat-message.assistant,[data-theme="dark"] .coverage-status,[data-theme="dark"] .data-status,[data-theme="dark"] .api-readiness,[data-theme="dark"] .otp-step,[data-theme="dark"] .area-class,[data-theme="dark"] .no-crops{background:#0e1a2d;border-color:var(--stroke);color:var(--text-secondary)}
+  [data-theme="dark"] input::placeholder,[data-theme="dark"] textarea::placeholder{color:#8094b0}
+  [data-theme="dark"] input:focus,[data-theme="dark"] select:focus,[data-theme="dark"] textarea:focus,[data-theme="dark"] .ai-textarea:focus{border-color:#80b9ff;box-shadow:0 0 0 3px #80b9ff26}
+  [data-theme="dark"] label,[data-theme="dark"] .auth-tab{color:var(--text-secondary)}
+  [data-theme="dark"] .step,[data-theme="dark"] .secondary,[data-theme="dark"] .toggle,[data-theme="dark"] .plan-tile button{background:#172944;border-color:#344d6e;color:#c8ddfb}
+  [data-theme="dark"] .toggle.active,[data-theme="dark"] .plan-tile.current button{background:#2765aa;border-color:#4c91df;color:#fff}
+  [data-theme="dark"] .plan-tile.current{border-color:#5da6f6;box-shadow:inset 0 0 0 1px #5da6f6,0 8px 22px #0003}
+  [data-theme="dark"] .badge,[data-theme="dark"] .decision-meta span{background:#1a2b43;color:#c6d7ee}
+  [data-theme="dark"] .badge.rank,[data-theme="dark"] .crop-number{background:#19395f;color:#a9d3ff}
+  [data-theme="dark"] .badge.confirm{background:#382e1e;color:#f4d28a}
+  [data-theme="dark"] .recommendation-note,[data-theme="dark"] .chat-message.user{background:#183253;border-color:#345778;color:#d8eaff}
+  [data-theme="dark"] .ai-locked,[data-theme="dark"] .alert.warning{background:#30291e;border-color:#665330;color:#f1d18a}
+  [data-theme="dark"] .alert.info{background:#142a40;border-color:#294b6a;color:#c4def6}
+  [data-theme="dark"] .auth-status.error{color:#ff9ca3}[data-theme="dark"] .auth-status.success{color:#8de0b4}
+  [data-theme="dark"] .account-bar,[data-theme="dark"] .demo-pill{background:#121e32;border-color:var(--stroke);color:#d2e3fa}
+  [data-theme="dark"] .theme-toggle{background:#172944;border-color:#344d6e;color:#d5e5fb}[data-theme="dark"] .theme-toggle:hover{background:#203756;border-color:#5a7da4;color:#fff}
+  [data-theme="dark"] .toast{background:#172b47;color:#f1f6ff}
+  [data-theme="dark"] #salinityMap .leaflet-tile{filter:brightness(.72) invert(1) hue-rotate(180deg) saturate(.65) contrast(.92)}
+  [data-theme="dark"] #salinityMap .leaflet-control-attribution,[data-theme="dark"] #salinityMap .leaflet-control-zoom a{background:#13223a;color:#d9e8fb;border-color:#344d6e}
+  [data-theme="dark"] #salinityMap .leaflet-control-attribution a{color:#8fc0ff}
+  [data-theme="dark"] button:focus-visible,[data-theme="dark"] a:focus-visible,[data-theme="dark"] summary:focus-visible{outline-color:#8cc2ff}
+</style>
 </head>
 <body>
 <main class="shell">
@@ -113,7 +145,7 @@
     <div><div class="eyebrow">مستشار المحاصيل · الأردن</div><h2>نظرة سريعة على مزرعتك</h2><p>الموقع والمساحة والتربة والتوصيات الزراعية في لوحة واحدة. راجع العوامل التي تؤثر في كل توصية قبل اتخاذ القرار.</p></div>
     <div class="hero-visual" aria-label="مراحل إعداد التوصية الزراعية"><div class="hero-visual-head">من بيانات الأرض إلى قائمة المحاصيل <span>٣ خطوات</span></div><div class="hero-flow"><div class="hero-step"><b>١. الموقع</b><small>حدد الأرض على الخريطة</small></div><div class="hero-step"><b>٢. الظروف</b><small>أضف الري والملوحة والمحصول السابق</small></div><div class="hero-step"><b>٣. التقييم</b><small>راجع المحاصيل والقواعد المستخدمة</small></div></div></div>
   </section>
-  <section class="subscription-card card" id="subscriptionPanel"><div class="card-head"><div><h3>خطة الحساب</h3><p class="sub" id="subscriptionStatus">جاري تحميل الخطة…</p></div><span class="step">اشتراك شهري</span></div><div class="plan-list" id="planList" aria-live="polite"></div><p class="billing-note">الأسعار بوضع «يُحدد لاحقًا». اختيار خطة مدفوعة يسجل طلبًا بانتظار ربط الدفع؛ لن يتم خصم أي مبلغ.</p></section>
+
   <div class="grid">
     <section class="card">
       <div class="card-head"><div><h3>بيانات المزرعة</h3><p class="sub">الموقع يساعد على اختيار حزمة المحاصيل المناسبة</p></div><span class="step">01 · المزرعة</span></div>
@@ -171,6 +203,7 @@
     </section>
   </div>
   <section class="card record"><div class="card-head"><div><h3>سجل القرارات</h3><p class="sub" id="historySource">العرض المحلي يُحفظ في هذا المتصفح فقط.</p></div><span class="step">03 · السجل</span></div><div id="historyList" class="history-list"></div></section>
+  <section class="subscription-card card" id="subscriptionPanel"><div class="card-head"><div><h3>خطة الحساب</h3><p class="sub" id="subscriptionStatus">جاري تحميل الخطة…</p></div><span class="step">اشتراك شهري</span></div><div class="plan-list" id="planList" aria-live="polite"></div><p class="billing-note">الأسعار بوضع «يُحدد لاحقًا». اختيار خطة مدفوعة يسجل طلبًا بانتظار ربط الدفع؛ لن يتم خصم أي مبلغ.</p></section>
   <footer>Crop Advisor · الواجهة تعمل محليًا ولا ترسل بيانات المزرعة لأي جهة في وضع العرض التجريبي.</footer>
   </div>
 </main>

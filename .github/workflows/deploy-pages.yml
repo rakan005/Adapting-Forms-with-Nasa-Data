@@ -37,8 +37,6 @@ jobs:
         run: npm ci
       - name: Build app
         working-directory: frontend
-        env:
-          VITE_API_BASE_URL: https://adapting-forms-with-nasa-data-1.onrender.com
         run: npm run build
       - name: Prepare SPA fallback
         run: cp frontend/dist/index.html frontend/dist/404.html

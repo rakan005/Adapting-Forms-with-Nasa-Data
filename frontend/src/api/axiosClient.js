@@ -1,7 +1,8 @@
 // Shared Axios client: injects the farmer token and handles expired sessions.
 import axios from 'axios'
 
-export const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080').replace(/\/$/, '')
+const configuredApiBase = document.querySelector('meta[name="crop-advisor-api-base"]')?.content?.trim()
+export const API_BASE_URL = (configuredApiBase || 'http://localhost:8080').replace(/\/$/, '')
 export const api = axios.create({ baseURL: API_BASE_URL, headers: { 'Content-Type': 'application/json' }, timeout: 25000, paramsSerializer: { indexes: null } })
 let onUnauthorized = () => {}
 export const setUnauthorizedHandler = (handler) => { onUnauthorized = handler }

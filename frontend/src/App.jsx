@@ -5,22 +5,22 @@ import Layout from './components/Layout'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoadingSpinner from './components/LoadingSpinner'
 import useAuth from './hooks/useAuth'
-import { PublicHomePage, GuestPreviewPage } from './pages/PublicPages'
-import {
-  AuthPage,
-  DashboardPage,
-  FarmsPage,
-  FarmDetailPage,
-  AdvicePage,
-  DecisionsPage,
-  DecisionDetailPage,
-  AssistantPage,
-  AlertsPage,
-  SubscriptionPage,
-  ReportPage,
-  SeasonsPage,
-  NotFoundPage,
-} from './pages/Pages'
+import PublicHomePage from './pages/PublicHomePage'
+import GuestPreviewPage from './pages/GuestPreviewPage'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import DashboardPage from './pages/DashboardPage'
+import FarmsPage from './pages/FarmsPage'
+import FarmDetailPage from './pages/FarmDetailPage'
+import AdvicePage from './pages/AdvicePage'
+import DecisionsPage from './pages/DecisionsPage'
+import DecisionDetailPage from './pages/DecisionDetailPage'
+import AssistantPage from './pages/AssistantPage'
+import AlertsPage from './pages/AlertsPage'
+import SubscriptionPage from './pages/SubscriptionPage'
+import ReportPage from './pages/ReportPage'
+import SeasonsPage from './pages/SeasonsPage'
+import NotFoundPage from './pages/NotFoundPage'
 
 function HomePage() {
   const { isAuthenticated, loading } = useAuth()
@@ -40,8 +40,8 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
-          <Route path="login" element={<AuthPage />} />
-          <Route path="register" element={<AuthPage register />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="register" element={<RegisterPage />} />
 
           <Route element={<ProtectedRoute />}>
             <Route path="farms" element={<FarmsPage />} />

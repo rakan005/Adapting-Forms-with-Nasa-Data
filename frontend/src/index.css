@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { font-family: 'Cairo', sans-serif; color-scheme: light; }
+html, body, #root { min-height: 100%; margin: 0; }
+body { @apply bg-[#f4f7f2] text-slate-800 antialiased; }
+button, input, select, textarea { font: inherit; }
+.dark body { @apply bg-[#0d1713] text-slate-100; color-scheme: dark; }
+.leaflet-container { height: 100%; width: 100%; border-radius: 1rem; z-index: 0; }
+.print-only { display: none; }
+@layer components {
+  .field { @apply w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm outline-none transition placeholder:text-slate-400 focus:border-forest-500 focus:ring-2 focus:ring-emerald-100 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100 dark:focus:ring-emerald-900/40; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-forest-700 px-4 py-2.5 text-sm font-bold text-white transition hover:bg-forest-600 disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700 transition hover:border-emerald-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200; }
+  .btn-danger { @apply inline-flex items-center justify-center gap-2 rounded-xl bg-red-50 px-3 py-2 text-sm font-bold text-red-700 hover:bg-red-100 dark:bg-red-950/30 dark:text-red-300; }
+}
+@media print { .no-print { display: none !important; } .print-only { display: block; } body { background: white !important; color: #111827 !important; } }

@@ -3,8 +3,22 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#2E6B3E">
-<meta name="description" content="Field Shift: evidence-informed crop rotation comparisons, transparent source labels and uncertainty. Arabic and English.">
+<meta name="description" content="Field Shift helps farmers explore four crop-rotation strategies, compare water and soil trade-offs, and understand uncertainty. GitHub Pages runs a clearly labelled Synthetic Demo; NASA POWER Live mode requires the Node.js backend.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Field Shift">
+<meta property="og:title" content="Field Shift | Crop Rotation Decision Support">
+<meta property="og:description" content="Explore crop-rotation trade-offs with explainable scores and uncertainty. This GitHub Pages preview uses synthetic demo data, not live NASA observations.">
+<meta property="og:url" content="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/">
+<meta property="og:locale" content="ar_JO">
+<meta property="og:locale:alternate" content="en_US">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Field Shift | Crop Rotation Decision Support">
+<meta name="twitter:description" content="Compare crop rotations and explore uncertainty. The public GitHub Pages preview uses synthetic data; NASA POWER Live mode requires a separate server.">
 <title>Field Shift | Crop rotation intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="./styles.css">
 <link rel="stylesheet" href="./theme.css">
 </head>
@@ -26,6 +40,37 @@
   <div class="hero-visual" aria-hidden="true"><div class="field-illustration"><div class="sun-circle"></div><div class="hill hill-back"></div><div class="hill hill-front"></div><div class="field-band field-band-one"></div><div class="field-band field-band-two"></div><div class="field-band field-band-three"></div><div class="soil-dots">• • • • •</div><div class="field-label">FIELD SHIFT / 2026</div></div><div class="hero-note note-a">◉ &nbsp; CLIMATE</div><div class="hero-note note-b">▦ &nbsp; SOIL</div><div class="hero-note note-c">◇ &nbsp; CHOICE</div></div>
 </section>
 <section class="notice-bar" role="note"><span class="notice-symbol">ⓘ</span><div><b data-ar="توصيات للاستكشاف، وليست أوامر زراعية." data-en="Scenarios for review, not farming instructions.">توصيات للاستكشاف، وليست أوامر زراعية.</b> <span data-ar="الأداة تدعم خبرة المزارع والمرشد المحلي ولا تستبدلها. المناخ تاريخي وإقليمي، وليس توقعًا لغلة الحقل." data-en="This tool supports, never replaces, local agronomic expertise. Climate data are historical and regional, not field yield forecasts.">الأداة تدعم خبرة المزارع والمرشد المحلي ولا تستبدلها. المناخ تاريخي وإقليمي، وليس توقعًا لغلة الحقل.</span></div></section>
+<section class="info-overview no-print" aria-labelledby="mode-guide-heading">
+  <div class="info-overview-head">
+    <span class="eyebrow" data-ar="شفافية البيانات" data-en="DATA TRANSPARENCY">شفافية البيانات</span>
+    <h2 id="mode-guide-heading" data-ar="ما الفرق بين Live وSynthetic Demo؟" data-en="Live vs Synthetic Demo: what's different?">ما الفرق بين Live وSynthetic Demo؟</h2>
+    <p data-ar="اختَر الوضع المناسب قبل التحليل. المعاينة على GitHub Pages تعرض مثالًا اصطناعيًا فقط، ولا تجلب NASA مباشرة." data-en="Choose your data mode before analysis. GitHub Pages is a synthetic-only preview; it does not fetch NASA data.">اختَر الوضع المناسب قبل التحليل. المعاينة على GitHub Pages تعرض مثالًا اصطناعيًا فقط، ولا تجلب NASA مباشرة.</p>
+  </div>
+  <div class="info-mode-grid">
+    <article class="info-mode-card" aria-labelledby="live-card-title">
+      <div class="info-card-top"><span class="info-mode-symbol" aria-hidden="true">☁</span><h3 id="live-card-title">Live Mode</h3></div>
+      <p data-ar="يعمل عبر خادم Node.js ويتصل بـNASA POWER للحصول على مناخ تاريخي حقيقي عند نجاح الطلب أو توفر Cache صالح. لا يعمل عبر GitHub Pages وحده." data-en="Runs through the Node.js server. Successful NASA POWER requests or valid caches provide real historical regional climate data. GitHub Pages alone cannot run Live mode.">يعمل عبر خادم Node.js ويتصل بـNASA POWER للحصول على مناخ تاريخي حقيقي عند نجاح الطلب أو توفر Cache صالح. لا يعمل عبر GitHub Pages وحده.</p>
+      <span class="info-card-foot" data-ar="🧮 مؤشرات مناخ مُنمذجة — ليست قياسات حقل مباشرة" data-en="🧮 Modelled regional climate — not direct field measurements">🧮 مؤشرات مناخ مُنمذجة — ليست قياسات حقل مباشرة</span>
+    </article>
+    <article class="info-mode-card demo-info" aria-labelledby="demo-card-title">
+      <div class="info-card-top"><span class="info-mode-symbol" aria-hidden="true">◇</span><h3 id="demo-card-title">Synthetic Demo</h3></div>
+      <p data-ar="بيانات مُولّدة لأغراض التعلم وتجربة التصميم والحسابات فقط. ليست بيانات NASA أو ملاحظات حقيقية أو توقعًا زراعيًا. هذا هو الوضع المتاح في رابط التيم." data-en="Generated example values for learning, UI preview, and algorithm demonstrations only. Not NASA data, observations, or agricultural forecasts. This is the mode available in the team preview.">بيانات مُولّدة لأغراض التعلم وتجربة التصميم والحسابات فقط. ليست بيانات NASA أو ملاحظات حقيقية أو توقعًا زراعيًا. هذا هو الوضع المتاح في رابط التيم.</p>
+      <span class="info-card-foot" data-ar="⚠ نتائج اصطناعية للتوضيح — لا تُستخدم كدليل علمي" data-en="⚠ Synthetic results — not scientific evidence">⚠ نتائج اصطناعية للتوضيح — لا تُستخدم كدليل علمي</span>
+    </article>
+  </div>
+</section>
+<section class="info-overview source-overview no-print" aria-labelledby="data-guide-heading">
+  <div class="info-overview-head">
+    <span class="eyebrow" data-ar="مصادر البيانات" data-en="DATA SOURCES">مصادر البيانات</span>
+    <h2 id="data-guide-heading" data-ar="من أين تأتي المؤشرات؟" data-en="Where do the indicators come from?">من أين تأتي المؤشرات؟</h2>
+    <p data-ar="هذه مصادر يدعمها المشروع عند توفرها. ذكر المصدر لا يعني أنه تم تحميله لهذه المزرعة؛ راجع لوحة «من أين جاءت البيانات؟» في نتائج كل تحليل." data-en="These are sources supported when available. Listing one does not mean it was loaded for your field; always inspect the evidence panel in your result.">هذه مصادر يدعمها المشروع عند توفرها. ذكر المصدر لا يعني أنه تم تحميله لهذه المزرعة؛ راجع لوحة «من أين جاءت البيانات؟» في نتائج كل تحليل.</p>
+  </div>
+  <div class="info-sources-grid">
+    <article class="source-mini"><span class="info-data-icon" aria-hidden="true">☀</span><h3>NASA POWER</h3><p data-ar="حرارة وهطول تاريخيان لتقدير ظروف المناخ الإقليمي في Live، عند نجاح الاتصال." data-en="Historical temperature and precipitation for regional climate context in Live mode, only after successful retrieval.">حرارة وهطول تاريخيان لتقدير ظروف المناخ الإقليمي في Live، عند نجاح الاتصال.</p><a href="https://power.larc.nasa.gov/" target="_blank" rel="noopener noreferrer" aria-label="NASA POWER official data website">POWER ↗</a></article>
+    <article class="source-mini"><span class="info-data-icon" aria-hidden="true">◉</span><h3>NASA MODIS NDVI</h3><p data-ar="مؤشر غطاء نباتي اختياري؛ يحتاج استيرادًا منفصلًا وفلترة جودة، وقد لا يناسب الحقول الصغيرة." data-en="Optional vegetation-index observations; require separate import and quality screening, and may mix small fields.">مؤشر غطاء نباتي اختياري؛ يحتاج استيرادًا منفصلًا وفلترة جودة، وقد لا يناسب الحقول الصغيرة.</p><a href="https://modis.ornl.gov/" target="_blank" rel="noopener noreferrer" aria-label="NASA MODIS ORNL DAAC website">MODIS ↗</a></article>
+    <article class="source-mini"><span class="info-data-icon" aria-hidden="true">▦</span><h3>ISRIC SoilGrids</h3><p data-ar="تقديرات تربة اختيارية من ISRIC وليست من NASA، ولا تحل محل التحليل المخبري." data-en="Optional ISRIC soil estimates. Not a NASA dataset and not a replacement for laboratory testing.">تقديرات تربة اختيارية من ISRIC وليست من NASA، ولا تحل محل التحليل المخبري.</p><a href="https://soilgrids.org/" target="_blank" rel="noopener noreferrer" aria-label="ISRIC SoilGrids official site">SoilGrids ↗</a></article>
+  </div>
+</section>
 <div class="workspace">
 <aside class="sidebar no-print" id="input-panel" aria-label="Field analysis settings">
  <div class="section-heading"><span class="section-number">01</span><div><h2 data-ar="صمّم خطة أرضك" data-en="Build your field profile">صمّم خطة أرضك</h2><p data-ar="ثلاث خطوات بسيطة، ثم قارن البدائل" data-en="Three quick steps, then compare alternatives">ثلاث خطوات بسيطة، ثم قارن البدائل</p></div></div>

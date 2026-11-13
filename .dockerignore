@@ -1,6 +1,6 @@
 .git
-.idea
-.vscode
-target
-data
-*.log
+node_modules
+*.zip
+data/cache
+data/observations
+.DS_Store

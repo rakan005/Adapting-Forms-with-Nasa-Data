@@ -1,184 +1,106 @@
-# Crop Advisor Backend
+# Field Shift — Adapting Farms with NASA Data
 
-Java 21 / Spring Boot backend for the Adapting Forms with NASA Data project. The current climate provider and crop pack are demo fixtures; their values are not NASA observations or validated farming advice. The NASA provider stays pending until the project receives and reviews the actual dataset.
+**NASA Space Apps Challenge 2026 | runnable Node.js + TypeScript MVP**
 
-## Current capabilities
+A bilingual-friendly Arabic/English-technical decision-support prototype comparing **the farmer's current crop rotation (baseline)** with **three alternative rotations**. It uses NASA POWER historical climate **only when successfully fetched**, optional quality-filtered MODIS NDVI and optional SoilGrids estimates, transparent expert crop traits, user priorities, MCDA, and seeded Monte Carlo sensitivity analysis.
 
-- Farmer registration and passwordless sign-in with expiring, single-use email codes, hashed code storage, expiring bearer sessions, and account-scoped farm/decision access.
-- Multiple farms per farmer, with free/paid monthly plan definitions and server-side limits.
-- Subscription records; free plan is active, while paid selections stay `PENDING_PAYMENT` until a payment provider is connected. Prices are intentionally unset.
-- Per-farm planting-season history, in-app climate threshold notices, alert preferences, and a printable report endpoint.
-- Farm create, read, update, list, and delete; decision history and farmer action tracking.
-- Crop advice rules for sowing windows, irrigation access, measured soil salinity, regional salinity caution, rainfall deficit and water demand, heat limits, and cereal-to-legume nitrogen restoration.
-- Confidence and geographic coverage levels; unranked advice is returned for broader coverage. Fallow is surfaced when no crop passes the safety rules.
-- Daily temperature degree-day calculation when validated daily observations and crop thresholds are available in a pack.
-- AI chat endpoint with optional current farm and latest advice context; structured data organizer extracts a proposed farm update from natural language and normalizes crop choices against the active pack. Organizer results are drafts and are not saved automatically.
-- Regional salinity reference endpoint based on a 2016 UNDP GeoHub categorical map. Categories are not converted into dS/m. Users can provide a lab measurement or override the regional category.
-- H2 for local development or managed PostgreSQL in hosting, Flyway migrations, request validation, API errors, Actuator health, and Swagger UI.
+**Repository reset (Nov 13, 2026):** This runnable Node.js + TypeScript MVP is the main-branch project. The earlier Spring Boot + React implementation is retained in Git history and the `backup-before-field-shift-mvp-2026-11-13` branch. Former account, subscription, and chatbot features were intentionally not migrated into the competition MVP. This is an experimental decision-support prototype, not a production farmer-account platform.
 
-## Requirements and run
+## Quick start
 
-- JDK 21 (a JRE alone is not enough to compile).
-- Apache Maven 3.9+.
+Requirements: **Node.js 22.16+**. No `npm install` or external Node packages required.
 
 ```bash
-mvn -DskipTests package
-mvn spring-boot:run
+npm start
+# Visit http://localhost:3100
+npm test
 ```
 
-The service listens on `http://localhost:8080`.
+- **Live** (default): fetches real **NASA POWER** daily point values for 2020–2024 via NASA's HTTPS API, then caches only successful results in `data/cache/` (not committed). A blocked API returns **503 DATA_UNAVAILABLE**, with no fabricated replacement.
+- **Synthetic Demo**: opt in using the data-mode selector. The output prominently says **synthetic, NOT NASA** and returns low confidence. Only use it to demonstrate app mechanics, never as a valid NASA-supported submission.
+- Input coordinates: default demonstration location near Amman (31.9, 35.9), not a surveyed parcel. Other coordinates are accepted as **exploratory only**. Local crop suitability and season calendars have NOT been adapted globally.
+- Inputs: coordinates, required farm area (dunums), water source, the existing rotation, optional **farmer-reported lab SOC (g/kg, top 0–5cm)**, five priority sliders, optional hypothetical rainfall/temperature stress test.
+- Output: four ranked rotation cards, baseline, criterion breakdowns, explanations, evidence, benefits, gaps, local-check risks, sensitivity interval P5–P95, *P(top) = stability to assumptions, not likelihood of agricultural success*, historical monthly timeline, dataset sources/provenance, print-to-PDF report.
+- Real-world data is **not included in this ZIP**. Running the server with network access fetches it; generate NDVI and SoilGrids locally as shown below.
 
-- Swagger UI: `http://localhost:8080/swagger-ui.html`
-- Health: `http://localhost:8080/actuator/health`
-- H2 console: `http://localhost:8080/h2-console` (disabled by default; set `H2_CONSOLE_ENABLED=true` locally to enable it).
+## Additional datasets (optional but valuable for the official challenge)
 
-The chat and organizer endpoints use Gemini via Google AI Studio. Without a Gemini API key, the service still starts normally and these endpoints return `503 AI_NOT_CONFIGURED`.
+The Python fetch scripts extracted from the user's `ALL_IN_ONE.md` reference are in `scripts/`; quality and missing-data handling were strengthened. They require outbound HTTPS and `pip install -r scripts/requirements.txt`.
 
 ```bash
-export GEMINI_API_KEY="your-key"
-# Optional: GEMINI_MODEL=gemini-3.5-flash-lite
-mvn spring-boot:run
+mkdir -p data/observations
+python scripts/power_fetch.py --lat 31.9 --lon 35.9 --start 2020-01-01 --end 2024-12-31 --out data/observations/power.csv
+python scripts/modis_ndvi_fetch.py --lat 31.9 --lon 35.9 --start 2020-01-01 --end 2024-12-31 --out data/observations/ndvi.csv
+python scripts/soilgrids_fetch.py --lat 31.9 --lon 35.9 --out data/observations/soil.json
+python scripts/features.py --power data/observations/power.csv --ndvi data/observations/ndvi.csv --lat 31.9 --out data/observations/features.json
+python scripts/validate_era5.py --power data/observations/power.csv --lat 31.9 --lon 35.9
 ```
 
-## API quick start
+Node reads optional `data/observations/ndvi.csv` **only when `ndvi.meta.json` confirms the exact evaluation point**. It loads `soil.json` only when its coordinates match. The Python features and MCDA scripts serve as reference/cross-check; the interactive API recomputes features and scores in TypeScript, using real POWER from its own API/cache. The precomputed `features.json` and `power.csv` are not silently used as live data. For optional live SoilGrids retrieval, start with `FS_SOIL_LIVE=1 npm start` (API can fail; missing soil stays missing). **Important:** ISRIC states its SoilGrids REST API is currently temporarily paused, so prefer a verified local lab input, or an independent ISRIC download route. Do not block submission on the REST endpoint.
 
-Create a farm (area is required and uses Jordanian dunums, where 1 dunum = 1,000 m²):
+**Power caching matters:** NASA POWER states repeated identical grid requests can be rate-limited. Use the cache, not many duplicate requests for the same location. The API's native resolution is not field-scale.
 
-```http
-POST /api/v1/farms
-Authorization: Bearer <accessToken>
-Content-Type: application/json
+## API
 
+| Route | Method | Description |
+|---|---|---|
+| `/api/health` | GET | Health check, no external API call |
+| `/api/config` | GET | Crop catalog, example rotations and weights |
+| `/api/evaluate` | POST | Validate and evaluate the field; real NASA by default |
+
+### JSON request example
+
+```json
 {
-  "name": "Demo farm",
-  "latitude": 31.95,
-  "longitude": 35.91,
-  "areaDunum": 12.5,
-  "irrigation": "LIMITED",
-  "previousCropCode": "WHEAT"
+  "lat": 31.9, "lon": 35.9, "areaDunum": 12.5,
+  "waterSource": "RAINFED",
+  "currentRotation": ["wheat", "fallow"],
+  "weights": {"water_saving":30,"soil_building":25,"erosion_control":20,"income":15,"heat_risk":10},
+  "scenario": {"rainPct":0,"tempDeltaC":0},
+  "mode": "live"
 }
 ```
 
-Request Arabic advice (replace `1` with the returned farm id):
+The `mode: "demo"` variant is for local technical tests only. Crop IDs and scores come from `assets/crops.csv`. `currentRotation` replaces the baseline; three other options are from `assets/strategies.example.json`. Crop/region/sowing validation still needs an agronomist. The server uses built-in HTTP with same-origin requests; do not expose it as a production account system.
 
-```http
-POST /api/v1/farms/1/advice?lang=ar
+## Scientific method
+
+1. NASA POWER daily T2M/T2M_MAX/T2M_MIN/PRECTOTCORR, full historical years, missing -999 converted to null, no invalid-year interpolation.
+2. Derive approximate reference ETo using Hargreaves–Samani, rain/ETo deficit, rainfall CV, hot days, frost days, long dry spells and monthly indicators. Heat (>35 °C), storm (>20 mm), dry (<1 mm), deficit normalization (1200 mm) are **initial uncalibrated model assumptions**, not official thresholds.
+3. Optional MODIS MOD13Q1 NDVI 250 m / 16 days; only `pixel_reliability=0`, and initial bare proxy NDVI<0.2. Cloud or unknown reliability does **not** become valid.
+4. Optional SoilGrids SOC 0–5 cm: **modelled** soil estimate, not a lab measurement. The MCDA soil-weight adjustment (<15 g/kg: ×1.15, otherwise ×1.05) is an explicitly **unvalidated heuristic**. Other soil properties are shown for review.
+5. Five criteria: `water_saving`, `soil_building`, `erosion_control`, `income`, `heat_risk`. Crop traits 1–5 are **expert assumptions**; they are NOT NASA observations, measured yields, prices, or scientifically calibrated probabilities.
+6. Monte Carlo perturbs expert crop trait scores, normalized farmer priorities via Dirichlet, and climate features according to completeness. Fixed seed 2026, 650 iterations for repeatable UI output. Display mean, 5th/95th percentile and chance to rank first **within those model perturbations only**. A low-data-quality run gets lower confidence.
+7. A `fallow` season may reduce demand for irrigation but is penalized in erosion control; rainfed/limited water-source modes apply an explicitly unvalidated penalty for water-demanding rotations. The trade-off is explicit. Crop-family changes are indicative only.
+8. All candidate strategies are exploratory; market prices, pest history, labor, local legal water rights, parcel-scale NDVI, and ground soil tests remain unresolved.
+
+See [DATA_SOURCES.md](DATA_SOURCES.md) and [docs/architecture.md](docs/architecture.md) for provenance and diagrams.
+
+## Validation and known limits
+
+The automated tests (`npm test`) cover schema and missing sentinels, NDVI unknown quality, complete historical years, scenario stress test, invalid/zero weights, reproducibility, confidence, baseline updating, and input validation. The scripts' network fetchers **have not been exercised against the external NASA/ORNL/ISRIC services inside this isolated build environment**. Do not claim real data ingestion succeeds until it runs successfully on a networked machine. Validate the source's current dataset version and API response before judging.
+
+The UI has no authentication: it intentionally provides public access without signing up, as the challenge demo requires. The embedded OpenStreetMap map is a center-point preview only, NOT farm boundary extraction. The report uses the browser's print-to-PDF, not server-side PDF generation.
+
+## Deployment
+
+```bash
+docker build -t field-shift-mvp .
+docker run --rm -p 3100:3100 -e PORT=3100 field-shift-mvp
 ```
 
-Optionally restrict evaluation to crops supported by the pack:
+A host with outbound access to `power.larc.nasa.gov` is necessary. Persistent storage for `data/cache/` is recommended for production demonstrations. The Docker image contains only the current TypeScript MVP, not the legacy Java app. Default user inputs are illustrative Jordan values; other geographies must be reviewed locally.
 
-```http
-POST /api/v1/farms/1/advice?lang=ar&crops=WHEAT&crops=LENTIL
-```
+## AI and submission integrity
 
-Salinity assessment by location:
+- **AI assistance used:** ChatGPT (OpenAI GPT-6) assisted in authoring TypeScript, frontend, tests, documentation and adapting the reference scripts; every result still requires human review and testing. Disclose AI in the NASA Space Apps 2026 submission form and repository. No AI-generated imagery or NASA identity assets are bundled.
+- **Open data attributions:** NASA POWER, NASA MODIS (only if loaded), ISRIC SoilGrids (only if loaded), OpenStreetMap base map. NASA does not endorse this project.
+- Keep the project page, demo subtitles or max 7 slides, dataset evidence, and all final submission fields **in English**. See `SUBMISSION_EN.md`.
+- **Pre-existing work / originality:** The user's Spring Boot/React work predates the event, and this standalone implementation may be prepared in advance as well. Check NASA Space Apps 2026 rules on pre-existing work, eligible original work and disclosure before entering a competition; do not misrepresent when code was written.
+- This build documents testable code but **does not prove an online deployment, approved local agronomy validation, or submitted competition entry**.
 
-```http
-GET /api/v1/reference/salinity?lat=31.95&lon=35.91
-```
+## Original project and deployment
 
-AI chat and data organization:
+The older Java + React version is preserved in the GitHub backup branch. See [INTEGRATION_AR.md](INTEGRATION_AR.md) for rollback information and [DEPLOY_AR.md](DEPLOY_AR.md) for Node hosting instructions. The original project references are preserved under `references/`; TypeScript diagrams are in `docs/architecture.md`. GitHub hosts **code**, but GitHub Pages alone cannot run a Node.js API; deploy the app to a Node-compatible host to enable live NASA data fetching.
 
-```http
-POST /api/v1/assistant/chat
-Content-Type: application/json
-
-{"message":"اشرح لي التوصية"}
-```
-
-```http
-POST /api/v1/assistant/organize
-Content-Type: application/json
-
-{"text":"المزرعة في السلط، مروي بالتنقيط، زرعت قمح الموسم الماضي"}
-```
-
-The organizer returns suggested structured fields for user review; it never writes them into the farm record implicitly.
-
-## Farmer accounts and plans
-
-Create an account by requesting a one-time email code, then verify it. Login uses the same email-code flow; there is no password field or password endpoint.
-
-```http
-POST /api/v1/auth/register/request-code
-Content-Type: application/json
-
-{"fullName":"Farmer Name","email":"farmer@example.com","phone":"+962..."}
-```
-
-```http
-POST /api/v1/auth/register/verify-code
-Content-Type: application/json
-
-{"email":"farmer@example.com","code":"123456"}
-```
-
-Login uses `POST /api/v1/auth/login/request-code` with `{"email":"farmer@example.com"}`, followed by `POST /api/v1/auth/login/verify-code` with the email and six-digit code. Codes expire after ten minutes, are single-use and stored as HMAC hashes. Requests are throttled by email. The login request gives a generic response to avoid revealing whether an address has an account. Verification returns an `accessToken`; send it as `Authorization: Bearer <accessToken>`. Sessions expire after seven days. Use `POST /api/v1/auth/logout` to revoke the current session.
-`GET /api/v1/subscriptions/plans` lists the monthly plans. `GET /api/v1/subscriptions/me` shows the selected and effective plans. `PUT /api/v1/subscriptions/me` selects a plan. Until checkout and a payment provider are configured, paid plans remain pending and the farmer keeps free-plan entitlements. Prices are not set in this prototype.
-
-Season records are available at `GET/POST /api/v1/farms/{farmId}/seasons`; delete a record with `DELETE /api/v1/farms/{farmId}/seasons/{seasonId}`. Reports are JSON snapshots at `/api/v1/farms/{farmId}/decisions/{decisionId}/report`; the frontend formats them for printing or saving as PDF. Alert preferences use `GET/PUT /api/v1/alerts/preferences`; alerts appear at `GET /api/v1/alerts`.
-
-The initial plan limits are implementation defaults, not approved commercial prices or final business policy: Basis has one farm and displays the latest 10 recommendations; Grower has three farms; Professional has 20. Review these limits with the team before launch. Alert evaluation currently runs when a new recommendation is requested; it is not a background job, SMS, or emergency warning. Demo climate alerts remain labeled with their demo data source. Farms created before account support remain unassigned; they are not exposed to newly registered accounts.
-
-## Deploying the Java API
-
-The backend can be deployed by a Docker-compatible Java hosting provider using the included `Dockerfile`. Configure these environment variables in the provider's private service settings:
-
-| Variable | Value |
-|---|---|
-| `GEMINI_API_KEY` | The AI Studio key; keep it only in the backend provider's secret settings. |
-| `ADVISOR_CORS_ALLOWED_ORIGINS` | The exact public frontend origin, for example `https://crop-advisor-team-demo.boxyfoam2.chatgpt.site`. The API permits the `Authorization` header for bearer sessions. |
-| `PORT` | Usually supplied by the hosting provider; the application defaults to `8080` locally. |
-| `SPRING_DATASOURCE_URL` | Managed PostgreSQL URL, for example `jdbc:postgresql://HOST:5432/DATABASE?sslmode=require`. |
-| `SPRING_DATASOURCE_USERNAME` / `SPRING_DATASOURCE_PASSWORD` | Credentials for the managed database. Flyway creates/updates tables at startup. |
-| `SPRING_PROFILES_ACTIVE` | Set to `postgresql` so Flyway uses the PostgreSQL schema migrations. |
-| `SPRING_MAIL_HOST` / `SPRING_MAIL_PORT` / `SPRING_MAIL_USERNAME` / `SPRING_MAIL_PASSWORD` | SMTP credentials for hosts that permit outbound SMTP. Enable SMTP auth and STARTTLS at the provider. Render Free blocks SMTP ports, so use the Resend API mode there. |
-| `RESEND_API_KEY` | Private Resend API key when `EMAIL_DELIVERY_MODE=resend`; the app sends through Resend's HTTPS API. |
-| `MAIL_FROM` | Sender address verified with the email provider. Resend's `onboarding@resend.dev` sender is suitable for testing; use a verified domain sender for production recipients. |
-| `OTP_HASH_SECRET` | Long random secret used to hash verification codes. Set a unique production value and keep it private. |
-| `EMAIL_DELIVERY_MODE` | Set to `resend` on Render Free, or `smtp` on a host that permits SMTP. `console` logs codes and is only for local development. |
-
-After deployment, check `/actuator/health`. The separate hosted frontend is configured to call the API's HTTPS origin. If that origin changes, update its `crop-advisor-api-base` meta tag and publish the frontend. The browser calls the API directly, so CORS must allow the exact frontend origin. Do not put the Gemini key in HTML or frontend environment variables.
-
-The default H2 file database is for local development. Set the PostgreSQL variables above on the hosted service and attach persistent managed PostgreSQL before relying on farm records. The PostgreSQL profile uses its own Flyway migration set; keep `SPRING_PROFILES_ACTIVE=postgresql` when switching the service to PostgreSQL. A live database must still be provisioned in the hosting dashboard. Configure Resend's HTTPS API (or SMTP on a host that permits it) before real users can receive codes.
-
-| Method | Path | Purpose |
-|---|---|---|
-| GET | `/api/v1/farms?page=0&size=20` | List farms |
-| GET / PUT / DELETE | `/api/v1/farms/{id}` | Read, replace, or erase a farm |
-| POST | `/api/v1/farms/{id}/advice` | Generate and save advice |
-| GET | `/api/v1/farms/{id}/decisions` | Decision history |
-| GET / PATCH | `/api/v1/decisions/{id}` | Read a decision / record farmer action |
-| GET | `/api/v1/reference/packs` | List knowledge packs |
-| GET | `/api/v1/reference/crops` | List crops |
-| GET | `/api/v1/reference/coverage?lat=31.95&lon=35.91` | Check crop pack coverage |
-| GET | `/api/v1/reference/salinity?lat=31.95&lon=35.91` | Estimate regional salinity class |
-| POST | `/api/v1/assistant/chat` | Ask the AI using optional farm/advice context |
-| POST | `/api/v1/assistant/organize` | Convert free text to a reviewable farm-data draft |
-| POST | `/api/v1/auth/register/request-code` / `verify-code` | Verify email and create an account |
-| POST | `/api/v1/auth/login/request-code` / `verify-code` | Passwordless email-code sign-in |
-
-## Salinity data limits
-
-The built-in regional reference contains raster classes rather than laboratory measurements and has coarse published resolution. It is shown as regional context only. Advice warns when the farm has no measured salinity and never treats a map class as a numeric soil conductivity measurement. Enter lab salinity in dS/m when available; the user can also override the categorical map result.
-
-## NASA data integration
-
-The `ClimateProvider` interface remains the integration boundary. Replace the demonstration fixture with a provider that reads the NASA dataset after the team supplies it, then confirm coordinates, variables, units, date window, and missing-value rules. Until then, fixture values are clearly marked in advice and force low confidence.
-
-## Project structure
-
-```text
-src/main/java/jo/orbitfarm/advisor/
-  advice/      advice orchestration and rule evaluation
-  assistant/   chat and structured farm-data organizer
-  climate/     provider interface, demo fixture, and GDD calculator
-  decision/    decision history and farmer actions
-  farm/        farm entity, persistence, and API
-  pack/        JSON pack model, validation, catalog, and reference API
-  salinity/    categorical regional map lookup and assessment
-src/main/resources/
-  db/migration/  Flyway schema
-  packs/         illustrative crop pack
-  salinity/      attributed regional salinity raster
-```
+The embedded public OpenStreetMap iframe requests map tiles centered on the entered coordinates from an external service. Field location may therefore be visible to the mapping provider; do not enter a private exact parcel location unless comfortable with that disclosure. For a private offline demo, remove the iframe or replace it with a local static basemap.

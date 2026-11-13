@@ -1,0 +1,12 @@
+{
+  "name": "field-shift-mvp",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Field Shift crop-rotation decision support — NASA Space Apps 2026",
+  "engines": {"node": ">=22.16.0"},
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning --experimental-strip-types src/server.ts",
+    "test": "node --disable-warning=ExperimentalWarning --experimental-strip-types --test tests/*.test.ts"
+  }
+}

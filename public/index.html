@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="theme-color" content="#102d2b"/>
+<title>Field Shift | قرار زراعي يستند إلى الأدلة</title>
+<meta name="description" content="قارن استراتيجيات التناوب الزراعي اعتمادًا على بيانات NASA ومصادر التربة وأولويات المزارع، مع إظهار حدود البيانات."/>
+<link rel="stylesheet" href="/styles.css"/>
+</head>
+<body>
+<header class="topbar no-print"><a class="brand" href="/" aria-label="Field Shift home"><span class="brand-mark">✦</span><span><b>Field Shift</b><small>SMART ROTATION LAB</small></span></a><span class="top-muted">Decision support · Earth data</span><span class="top-pill">2026 MVP</span></header>
+<main>
+<section class="hero no-print">
+  <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+  <div class="hero-copy">
+   <span class="eyebrow"><span class="dot"></span> EARTH DATA + FARMER KNOWLEDGE</span>
+   <h1>زرع أذكى.<br><em>أرض أقوى.</em></h1>
+   <p>مش بس أي محصول تزرع. قارن خطط تناوب كاملة، اعرف أثر المناخ والتربة، وشوف بوضوح وين البيانات مؤكدة ووين القرار بحاجة مراجعة محلية.</p>
+   <div class="hero-tags"><span>4 Rotation Plans</span><span>NASA POWER</span><span>MCDA + Uncertainty</span></div>
+  </div>
+  <div class="hero-visual" aria-hidden="true"><div class="orb-center"><span class="orb-leaf">✳</span><b>THE FIELD</b><small>ONE SEASON AT A TIME</small></div><div class="orb-label orb-a">CLIMATE <strong>↗</strong></div><div class="orb-label orb-b">SOIL <strong>◈</strong></div><div class="orb-label orb-c">CHOICE <strong>✓</strong></div></div>
+</section>
+<section class="notice-bar" role="note"><span class="notice-symbol">ⓘ</span><div><b>هذه أداة دعم قرار، وليست وصفة زراعية.</b><span> مناخ POWER إقليمي ومُنمذج، وخصائص المحاصيل تقديرات تحتاج مراجعة مرشد زراعي. لا تُستخدم النتائج لتوقع إنتاج فعلي.</span></div></section>
+<div class="workspace">
+<aside class="sidebar no-print" aria-label="إعدادات التحليل">
+ <div class="section-heading"><span class="section-number">01</span><div><h2>إعداد الحقل</h2><p>البيانات التي تعرفها عن أرضك</p></div></div>
+ <form id="farm-form">
+  <div class="switch-box"><label class="switch-label" for="mode">مصدر البيانات</label><select id="mode" name="mode"><option value="live">بيانات NASA حقيقية (Live)</option><option value="demo">تجربة تعليمية (Synthetic Demo)</option></select><small id="mode-note">الوضع الحي يجلب بيانات NASA POWER التاريخية من المصدر الرسمي.</small></div>
+  <div class="field-grid"><label>خط العرض Latitude<input type="number" id="lat" name="lat" min="-90" max="90" step="0.0001" value="31.9000" required></label><label>خط الطول Longitude<input type="number" id="lon" name="lon" min="-180" max="180" step="0.0001" value="35.9000" required></label></div>
+  <label>مساحة الأرض (دونم)<input id="areaDunum" type="number" min="0.01" max="100000" step="0.1" value="12.5" required></label>
+  <label>مصدر الماء<select id="waterSource"><option value="UNKNOWN">غير معروف</option><option value="RAINFED" selected>زراعة بعلية</option><option value="LIMITED">ري محدود</option><option value="IRRIGATED">ري متوفر</option></select></label>
+  <details class="advanced"><summary>لديّ تحليل تربة مخبري (اختياري)</summary><label class="inside">الكربون العضوي SOC (g/kg) — 0 إلى 5 سم<input type="number" min="0" max="300" step="0.1" id="soilSocGkg" placeholder="مثال مخبري فقط، لا تُخمّن"/></label><p class="fineprint">أدخل الرقم فقط إذا لديك نتيجة تحليل حقيقية. لن يتم التحقق من المختبر آليًا.</p></details>
+  <label>التناوب الحالي — أول موسم<select id="crop1" required></select></label>
+  <label>التناوب الحالي — الموسم التالي<select id="crop2" required></select></label>
+  <details class="advanced"><summary>إضافة موسم ثالث اختياري</summary><label class="inside">الموسم الثالث<select id="crop3"><option value="">بدون موسم إضافي</option></select></label></details>
+  <div class="section-heading subsection"><span class="section-number">02</span><div><h2>أولوياتك</h2><p>حرّك المؤشرات؛ مجموعها يُطبَّع تلقائيًا</p></div></div>
+  <div class="sliders">
+    <label for="water_saving"><span>توفير الماء</span><output id="out-water_saving">30</output></label><input type="range" min="0" max="100" step="5" id="water_saving" value="30"/>
+    <label for="soil_building"><span>تحسين التربة</span><output id="out-soil_building">25</output></label><input type="range" min="0" max="100" step="5" id="soil_building" value="25"/>
+    <label for="erosion_control"><span>تقليل التعرية</span><output id="out-erosion_control">20</output></label><input type="range" min="0" max="100" step="5" id="erosion_control" value="20"/>
+    <label for="income"><span>مرونة الدخل / العلف</span><output id="out-income">15</output></label><input type="range" min="0" max="100" step="5" id="income" value="15"/>
+    <label for="heat_risk"><span>تقليل مخاطر الحرارة</span><output id="out-heat_risk">10</output></label><input type="range" min="0" max="100" step="5" id="heat_risk" value="10"/>
+  </div>
+  <details class="advanced"><summary>اختبار ضغط افتراضي · Scenario</summary>
+    <label for="rainPct" class="slider-text"><span>تغيّر الهطول (%)</span><output id="out-rainPct">0</output></label><input type="range" min="-50" max="50" step="5" value="0" id="rainPct"/>
+    <label for="tempDeltaC" class="slider-text"><span>تغيّر الحرارة (°C)</span><output id="out-tempDeltaC">0</output></label><input type="range" min="-5" max="5" step="0.5" value="0" id="tempDeltaC"/>
+    <p class="fineprint">هذا اختبار إجهاد للفرضيات، وليس توقعًا مناخيًا صادرًا عن NASA.</p>
+  </details>
+  <button type="submit" class="btn-main" id="submit"><span>حلّل استراتيجيات التناوب</span><span>↙</span></button>
+  <p class="sidebar-foot">لا يحتاج إنشاء حساب. البيانات الشخصية لا تُحفظ في هذه النسخة.</p>
+ </form>
+</aside>
+<div class="content">
+  <section class="section-card preview"><div class="section-heading"><span class="section-number">MAP</span><div><h2>موقع التجربة</h2><p>نقطة تمثيلية، وليست حدود الأرض الحقيقية</p></div></div><div class="map-box"><iframe id="map" title="خريطة موقع الحقل" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" aria-label="OpenStreetMap preview"></iframe><span class="map-pin">◎</span><span class="map-coords" id="coordinates">31.9000, 35.9000</span></div></section>
+  <div class="section-heading main-heading"><span class="section-number">03</span><div><h2>التحليل والمقارنة</h2><p>بيانات وأدلة واضحة لكل قرار</p></div></div>
+  <section id="empty" class="section-card empty"><div class="empty-icon">◎</div><h2>جاهز نقرأ حقلَك؟</h2><p>اختر مصدر البيانات واضغط «حلّل استراتيجيات التناوب» لتظهر المؤشرات والخيارات والمخاطر.</p><span>NASA POWER · SoilGrids · MODIS (عند التوفر)</span></section>
+  <section id="loading" class="section-card empty hidden" aria-live="polite"><div class="spinner"></div><h2>جارٍ تجهيز المقارنة...</h2><p>عند اختيار Live، قد تحتاج بيانات NASA بعض الوقت في أول طلب؛ تُحفظ النتائج المناخية في Cache للتكرار.</p></section>
+  <section id="error" class="error-panel hidden" aria-live="assertive"><b>تعذّر إكمال التحليل</b><p id="error-text"></p><button id="retry" class="btn-ghost" type="button">إعادة المحاولة</button></section>
+  <div id="results" class="hidden">
+   <section class="result-banner" id="result-banner"><div><span class="eyebrow">FIELD INTELLIGENCE</span><h2 id="result-title">نتائج مقارنة الاستراتيجيات</h2><p id="result-subtitle"></p></div><button id="print" class="btn-print no-print">⎙ حفظ تقرير PDF</button></section>
+   <div id="warnings" class="warnings"></div>
+   <div class="kpis" id="kpis"></div>
+   <div class="section-heading main-heading"><span class="section-number">04</span><div><h2>استراتيجيات التناوب</h2><p>الدرجة تمثل تقييمًا نسبيًا لافتراضات النموذج، وليست احتمال نجاح المحصول.</p></div></div>
+   <div id="strategy-cards" class="cards"></div>
+   <section class="section-card timeline-card"><div class="section-heading"><span class="section-number">05</span><div><h2>ذاكرة الحقل المناخية</h2><p>متوسطات الأشهر التاريخية، وليست توقعًا للسنة القادمة</p></div></div><div class="timeline-legend"><span><i class="legend-rain"></i> هطول (مم)</span><span><i class="legend-heat"></i> أيام حرارة عالية</span><span><i class="legend-ndvi"></i> NDVI إن توفر</span></div><div id="timeline" class="timeline"></div><p class="fineprint" id="timeline-note"></p></section>
+   <section class="section-card source-card"><div class="section-heading"><span class="section-number">06</span><div><h2>مصادر الأدلة وحدودها</h2><p>رصد بالأقمار، مناخ مُنمذج، استنتاجات، وافتراضات الخبراء</p></div></div><div id="sources" class="sources"></div><details class="advanced"><summary>منهجية الحساب والافتراضات</summary><div id="methodology" class="methodology"></div></details></section>
+  </div>
+</div></div>
+</main><footer><b>Field Shift</b><span>Research prototype · Supports, never replaces, local agronomy.</span><span>Data attribution: NASA POWER · NASA MODIS (if loaded) · ISRIC SoilGrids (if loaded). No NASA endorsement.</span></footer>
+<script type="module" src="/app.js"></script>
+</body></html>

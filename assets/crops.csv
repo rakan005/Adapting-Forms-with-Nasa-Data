@@ -1,0 +1,18 @@
+crop,group,n_fixing,root_depth,water_demand,drought_tol,frost_tol,erosion_cover,organic_matter,pest_break,forage_value,market_flex,kc_mid,source,notes
+wheat,cereal,0,3,3,3,4,3,2,2,2,4,1.15,FAO-56 approx + expert_assumption,winter cereal; pest_break low after other cereals
+barley,cereal,0,3,2,4,4,3,2,2,3,3,1.15,FAO-56 approx + expert_assumption,tolerant of dry/saline; earlier maturity
+oats,cereal,0,3,2,3,4,4,3,3,4,2,1.15,expert_assumption,good cover/forage; kc approx
+maize,cereal,0,4,5,2,1,3,3,2,3,4,1.20,FAO-56 approx + expert_assumption,high water; frost sensitive
+sorghum,cereal,0,5,2,5,1,3,3,3,3,3,1.00,FAO-56 approx + expert_assumption,deep roots; heat/drought tolerant
+millet,cereal,0,4,1,5,1,3,2,3,2,2,1.00,FAO-56 approx + expert_assumption,very drought tolerant
+chickpea,legume,1,3,2,4,3,2,3,5,2,4,1.00,FAO-56 approx + expert_assumption,good N and pest break after cereals
+lentil,legume,1,2,2,4,3,2,3,5,2,4,1.10,FAO-56 approx + expert_assumption,shallow roots
+faba_bean,legume,1,3,3,2,3,3,4,5,3,3,1.15,FAO-56 approx + expert_assumption,winter legume; needs adequate moisture
+vetch_cover,cover,1,3,2,3,4,5,5,5,4,1,1.00,expert_assumption,cover/green manure; check water use before next crop
+clover_berseem,forage,1,3,4,2,3,5,5,5,5,3,1.10,expert_assumption,forage legume; often irrigated
+alfalfa,forage,1,5,4,3,4,5,5,4,5,4,1.05,FAO-56 approx + expert_assumption,very deep roots; high water if irrigated
+canola,oilseed,0,3,3,3,3,3,2,5,1,4,1.10,expert_assumption,breaks cereal disease cycles
+sunflower,oilseed,0,5,3,4,2,3,3,4,1,3,1.05,FAO-56 approx + expert_assumption,deep taproot
+potato,vegetable,0,2,4,1,2,2,2,3,1,5,1.15,FAO-56 approx + expert_assumption,high input; shallow roots
+tomato,vegetable,0,3,4,2,1,2,2,3,1,5,1.15,FAO-56 approx + expert_assumption,irrigated; frost sensitive
+fallow,fallow,0,1,1,5,5,1,1,3,1,1,0.00,expert_assumption,bare field: low cover; may conserve some moisture

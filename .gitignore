@@ -1,5 +1,6 @@
-/target/
-/data/
-/.idea/
-*.iml
+node_modules/
+data/cache/
+data/observations/
 .DS_Store
+.env
+*.log

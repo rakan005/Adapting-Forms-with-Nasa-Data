@@ -1,1 +1,0 @@
-ALTER TABLE farm ADD COLUMN area_dunum DECIMAL(12, 2);

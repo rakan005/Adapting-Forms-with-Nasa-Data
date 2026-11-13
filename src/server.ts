@@ -77,10 +77,10 @@ async function body(req:IncomingMessage):Promise<any>{
   const parts:Buffer[]=[];let len=0;for await(const chunk of req){len+=chunk.length;if(len>35000)throw new Error('Request body too large');parts.push(chunk);}
   try{return JSON.parse(Buffer.concat(parts).toString('utf8'));}catch{throw new Error('Invalid JSON body');}
 }
-const types:Record<string,string>={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.svg':'image/svg+xml'};
+const types:Record<string,string>={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.svg':'image/svg+xml'};
 async function serveStatic(res:ServerResponse,pathname:string){
   const filename=pathname==='/'?'index.html':pathname.replace(/^\//,'');
-  if(!['index.html','app.js','styles.css'].includes(filename)){send(res,404,{error:'NOT_FOUND'});return;}
+  if(!['index.html','app.js','styles.css','theme.css','core.js','demo-engine.js','demo-catalog.json','demo-crops.json','demo-strategies.json'].includes(filename)){send(res,404,{error:'NOT_FOUND'});return;}
   const bytes=await readFile(join(ROOT,'public',filename));res.writeHead(200,{'content-type':types[extname(filename)]||'application/octet-stream','x-content-type-options':'nosniff'});res.end(bytes);
 }
 export const app=createServer(async(req,res)=>{
@@ -93,7 +93,7 @@ export const app=createServer(async(req,res)=>{
         dataMode:'live-first; explicit demo available',version:'2026-11-13 MVP'});return;
     }
     if(req.method==='POST'&&p==='/api/evaluate'){send(res,200,await evaluateRequest(await body(req)));return;}
-    if(req.method==='GET'&&(p==='/'||p==='/index.html'||p==='/app.js'||p==='/styles.css')){await serveStatic(res,p);return;}
+    if(req.method==='GET'&&(p==='/'||['/index.html','/app.js','/styles.css','/theme.css','/core.js','/demo-engine.js','/demo-catalog.json','/demo-crops.json','/demo-strategies.json'].includes(p))){await serveStatic(res,p);return;}
     send(res,404,{error:'NOT_FOUND'});
   }catch(e){const message=e instanceof Error?e.message:'Internal error';
     const status=e instanceof DataUnavailableError?503:/invalid|must|unknown|range|at least|require|provide|select|zero|no year|body too large/i.test(message)?400:500;

@@ -1,71 +1,84 @@
 <!doctype html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta name="theme-color" content="#102d2b"/>
-<title>Field Shift | قرار زراعي يستند إلى الأدلة</title>
-<meta name="description" content="قارن استراتيجيات التناوب الزراعي اعتمادًا على بيانات NASA ومصادر التربة وأولويات المزارع، مع إظهار حدود البيانات."/>
-<link rel="stylesheet" href="/styles.css"/>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#2E6B3E">
+<meta name="description" content="Field Shift: evidence-informed crop rotation comparisons, transparent source labels and uncertainty. Arabic and English.">
+<title>Field Shift | Crop rotation intelligence</title>
+<link rel="stylesheet" href="./styles.css">
+<link rel="stylesheet" href="./theme.css">
 </head>
 <body>
-<header class="topbar no-print"><a class="brand" href="/" aria-label="Field Shift home"><span class="brand-mark">✦</span><span><b>Field Shift</b><small>SMART ROTATION LAB</small></span></a><span class="top-muted">Decision support · Earth data</span><span class="top-pill">2026 MVP</span></header>
+<header class="topbar no-print">
+  <a href="./" class="brand" aria-label="Field Shift home"><span class="brand-mark" aria-hidden="true">◈</span><span><b>Field Shift</b><small>FARMS • DATA • DECISIONS</small></span></a>
+  <span class="top-muted" data-ar="مساعد المزارع في التخطيط للمواسم" data-en="Decision support for every growing season">مساعد المزارع في التخطيط للمواسم</span>
+  <div class="header-actions"><span class="top-pill">2026 · MVP</span><div class="language-switch" aria-label="Language / اللغة"><button type="button" id="lang-ar" aria-pressed="true">عربي</button><button type="button" id="lang-en" aria-pressed="false">EN</button></div></div>
+</header>
 <main>
-<section class="hero no-print">
-  <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+<section class="hero no-print" aria-labelledby="hero-title">
   <div class="hero-copy">
-   <span class="eyebrow"><span class="dot"></span> EARTH DATA + FARMER KNOWLEDGE</span>
-   <h1>زرع أذكى.<br><em>أرض أقوى.</em></h1>
-   <p>مش بس أي محصول تزرع. قارن خطط تناوب كاملة، اعرف أثر المناخ والتربة، وشوف بوضوح وين البيانات مؤكدة ووين القرار بحاجة مراجعة محلية.</p>
-   <div class="hero-tags"><span>4 Rotation Plans</span><span>NASA POWER</span><span>MCDA + Uncertainty</span></div>
+    <span class="eyebrow"><span class="dot"></span><span data-ar="الأرض أولًا، والقرار بالأدلة" data-en="EARTH DATA. FARMER KNOWLEDGE.">الأرض أولًا، والقرار بالأدلة</span></span>
+    <h1 id="hero-title"><span data-ar="خطّط للموسم القادم." data-en="Plan the next season.">خطّط للموسم القادم.</span><br><em data-ar="وخلّي أرضك أقوى." data-en="Build stronger soil.">وخلّي أرضك أقوى.</em></h1>
+    <p data-ar="قارن أربع خطط تناوب، افهم أثر الماء والمناخ والتربة، واعرف من أين جاءت كل معلومة وما الذي ما زلنا لا نعرفه." data-en="Compare four crop rotations. Explore water, climate and soil trade-offs, with transparent sources and clear uncertainty.">قارن أربع خطط تناوب، افهم أثر الماء والمناخ والتربة، واعرف من أين جاءت كل معلومة وما الذي ما زلنا لا نعرفه.</p>
+    <div class="hero-actions"><button id="quick-demo" type="button" class="hero-btn"><span data-ar="جرّب بحقل نموذجي" data-en="Try a sample field">جرّب بحقل نموذجي</span><span aria-hidden="true">↗</span></button><a href="#input-panel" class="hero-outline" data-ar="أدخل بيانات أرضك" data-en="Enter your field details">أدخل بيانات أرضك</a></div>
+    <div class="hero-tags"><span>4 ROTATION PLANS</span><span>MCDA + P5–P95</span><span>NASA POWER · LIVE OPTIONAL</span></div>
   </div>
-  <div class="hero-visual" aria-hidden="true"><div class="orb-center"><span class="orb-leaf">✳</span><b>THE FIELD</b><small>ONE SEASON AT A TIME</small></div><div class="orb-label orb-a">CLIMATE <strong>↗</strong></div><div class="orb-label orb-b">SOIL <strong>◈</strong></div><div class="orb-label orb-c">CHOICE <strong>✓</strong></div></div>
+  <div class="hero-visual" aria-hidden="true"><div class="field-illustration"><div class="sun-circle"></div><div class="hill hill-back"></div><div class="hill hill-front"></div><div class="field-band field-band-one"></div><div class="field-band field-band-two"></div><div class="field-band field-band-three"></div><div class="soil-dots">• • • • •</div><div class="field-label">FIELD SHIFT / 2026</div></div><div class="hero-note note-a">◉ &nbsp; CLIMATE</div><div class="hero-note note-b">▦ &nbsp; SOIL</div><div class="hero-note note-c">◇ &nbsp; CHOICE</div></div>
 </section>
-<section class="notice-bar" role="note"><span class="notice-symbol">ⓘ</span><div><b>هذه أداة دعم قرار، وليست وصفة زراعية.</b><span> مناخ POWER إقليمي ومُنمذج، وخصائص المحاصيل تقديرات تحتاج مراجعة مرشد زراعي. لا تُستخدم النتائج لتوقع إنتاج فعلي.</span></div></section>
+<section class="notice-bar" role="note"><span class="notice-symbol">ⓘ</span><div><b data-ar="توصيات للاستكشاف، وليست أوامر زراعية." data-en="Scenarios for review, not farming instructions.">توصيات للاستكشاف، وليست أوامر زراعية.</b> <span data-ar="الأداة تدعم خبرة المزارع والمرشد المحلي ولا تستبدلها. المناخ تاريخي وإقليمي، وليس توقعًا لغلة الحقل." data-en="This tool supports, never replaces, local agronomic expertise. Climate data are historical and regional, not field yield forecasts.">الأداة تدعم خبرة المزارع والمرشد المحلي ولا تستبدلها. المناخ تاريخي وإقليمي، وليس توقعًا لغلة الحقل.</span></div></section>
 <div class="workspace">
-<aside class="sidebar no-print" aria-label="إعدادات التحليل">
- <div class="section-heading"><span class="section-number">01</span><div><h2>إعداد الحقل</h2><p>البيانات التي تعرفها عن أرضك</p></div></div>
- <form id="farm-form">
-  <div class="switch-box"><label class="switch-label" for="mode">مصدر البيانات</label><select id="mode" name="mode"><option value="live">بيانات NASA حقيقية (Live)</option><option value="demo">تجربة تعليمية (Synthetic Demo)</option></select><small id="mode-note">الوضع الحي يجلب بيانات NASA POWER التاريخية من المصدر الرسمي.</small></div>
-  <div class="field-grid"><label>خط العرض Latitude<input type="number" id="lat" name="lat" min="-90" max="90" step="0.0001" value="31.9000" required></label><label>خط الطول Longitude<input type="number" id="lon" name="lon" min="-180" max="180" step="0.0001" value="35.9000" required></label></div>
-  <label>مساحة الأرض (دونم)<input id="areaDunum" type="number" min="0.01" max="100000" step="0.1" value="12.5" required></label>
-  <label>مصدر الماء<select id="waterSource"><option value="UNKNOWN">غير معروف</option><option value="RAINFED" selected>زراعة بعلية</option><option value="LIMITED">ري محدود</option><option value="IRRIGATED">ري متوفر</option></select></label>
-  <details class="advanced"><summary>لديّ تحليل تربة مخبري (اختياري)</summary><label class="inside">الكربون العضوي SOC (g/kg) — 0 إلى 5 سم<input type="number" min="0" max="300" step="0.1" id="soilSocGkg" placeholder="مثال مخبري فقط، لا تُخمّن"/></label><p class="fineprint">أدخل الرقم فقط إذا لديك نتيجة تحليل حقيقية. لن يتم التحقق من المختبر آليًا.</p></details>
-  <label>التناوب الحالي — أول موسم<select id="crop1" required></select></label>
-  <label>التناوب الحالي — الموسم التالي<select id="crop2" required></select></label>
-  <details class="advanced"><summary>إضافة موسم ثالث اختياري</summary><label class="inside">الموسم الثالث<select id="crop3"><option value="">بدون موسم إضافي</option></select></label></details>
-  <div class="section-heading subsection"><span class="section-number">02</span><div><h2>أولوياتك</h2><p>حرّك المؤشرات؛ مجموعها يُطبَّع تلقائيًا</p></div></div>
+<aside class="sidebar no-print" id="input-panel" aria-label="Field analysis settings">
+ <div class="section-heading"><span class="section-number">01</span><div><h2 data-ar="صمّم خطة أرضك" data-en="Build your field profile">صمّم خطة أرضك</h2><p data-ar="ثلاث خطوات بسيطة، ثم قارن البدائل" data-en="Three quick steps, then compare alternatives">ثلاث خطوات بسيطة، ثم قارن البدائل</p></div></div>
+ <div class="wizard-steps" role="tablist" aria-label="Steps"><button type="button" class="step-chip active" data-goto-step="1" aria-selected="true"><span>1</span><b data-ar="الموقع" data-en="Location">الموقع</b></button><button type="button" class="step-chip" data-goto-step="2" aria-selected="false"><span>2</span><b data-ar="المحاصيل" data-en="Crops">المحاصيل</b></button><button type="button" class="step-chip" data-goto-step="3" aria-selected="false"><span>3</span><b data-ar="أولوياتك" data-en="Priorities">أولوياتك</b></button></div>
+ <form id="farm-form" novalidate>
+ <div class="wizard-panel" data-step="1">
+  <div class="switch-box"><label class="switch-label" for="mode" data-ar="مصدر البيانات" data-en="Data source">مصدر البيانات</label><select id="mode" name="mode"><option value="live" data-ar="NASA POWER حقيقي (Live)" data-en="NASA POWER — live">NASA POWER حقيقي (Live)</option><option value="demo" data-ar="تجربة توضيحية (Synthetic Demo)" data-en="Synthetic demo — example">تجربة توضيحية (Synthetic Demo)</option></select><small id="mode-note" data-ar="الوضع الحي يحتاج خادمًا متصلًا بخدمة NASA POWER." data-en="Live mode requires the NASA POWER-connected server.">الوضع الحي يحتاج خادمًا متصلًا بخدمة NASA POWER.</small><div class="mode-flag" id="mode-flag"><span aria-hidden="true">●</span><span id="mode-flag-text">Live data mode</span></div></div>
+  <div class="field-grid"><label><span data-ar="خط العرض Latitude" data-en="Latitude">خط العرض Latitude</span><input type="number" id="lat" min="-90" max="90" step="0.0001" value="31.9000" required></label><label><span data-ar="خط الطول Longitude" data-en="Longitude">خط الطول Longitude</span><input type="number" id="lon" min="-180" max="180" step="0.0001" value="35.9000" required></label></div>
+  <label class="form-row"><span data-ar="مساحة الأرض (دونم)" data-en="Field area (dunums)">مساحة الأرض (دونم)</span><input id="areaDunum" type="number" min="0.01" max="100000" step="0.1" value="12.5" required></label>
+  <details class="advanced"><summary data-ar="عندي تحليل تربة مخبري (اختياري)" data-en="I have a soil lab test (optional)">عندي تحليل تربة مخبري (اختياري)</summary><label class="inside"><span>SOC (g/kg) · 0–5cm</span><input type="number" min="0" max="300" step="0.1" id="soilSocGkg" placeholder="e.g. 14"></label><p class="fineprint" data-ar="أدخل رقمًا حقيقيًا من المختبر فقط. لا يمكن التحقق منه آليًا." data-en="Enter actual lab values only. This input is not verified independently.">أدخل رقمًا حقيقيًا من المختبر فقط. لا يمكن التحقق منه آليًا.</p></details>
+ </div>
+ <div class="wizard-panel hidden" data-step="2">
+  <label class="form-row"><span data-ar="مصدر المياه" data-en="Water supply">مصدر المياه</span><select id="waterSource"><option value="UNKNOWN" data-ar="غير معروف" data-en="Unknown">غير معروف</option><option value="RAINFED" selected data-ar="بعلي / مياه المطر" data-en="Rain-fed">بعلي / مياه المطر</option><option value="LIMITED" data-ar="ري محدود" data-en="Limited irrigation">ري محدود</option><option value="IRRIGATED" data-ar="ري متوفر" data-en="Irrigated">ري متوفر</option></select></label>
+  <p class="subfield-caption" data-ar="التناوب الحالي: ماذا زرعت في مواسم متتالية؟" data-en="Current rotation: crops planted in consecutive seasons">التناوب الحالي: ماذا زرعت في مواسم متتالية؟</p>
+  <label class="form-row"><span data-ar="الموسم الأول" data-en="Season one">الموسم الأول</span><select id="crop1" required></select></label>
+  <label class="form-row"><span data-ar="الموسم الثاني" data-en="Season two">الموسم الثاني</span><select id="crop2" required></select></label>
+  <details class="advanced"><summary data-ar="إضافة موسم ثالث (اختياري)" data-en="Add a third season (optional)">إضافة موسم ثالث (اختياري)</summary><label class="inside"><span data-ar="الموسم الثالث" data-en="Season three">الموسم الثالث</span><select id="crop3"><option value="" data-ar="بدون موسم إضافي" data-en="No additional season">بدون موسم إضافي</option></select></label></details>
+  <div class="tip-box" data-ar="نقارن التناوب الحالي بثلاثة بدائل. خطتك الحالية هي نقطة المرجع وليست توصية." data-en="We compare your baseline against three alternatives. The baseline is a reference, not a recommendation.">نقارن التناوب الحالي بثلاثة بدائل. خطتك الحالية هي نقطة المرجع وليست توصية.</div>
+ </div>
+ <div class="wizard-panel hidden" data-step="3">
+  <p class="subfield-caption" data-ar="شو الأهم بالنسبة إلك؟ حرّك المؤشرات حسب أولوياتك." data-en="What matters most? Move sliders to set your priorities.">شو الأهم بالنسبة إلك؟ حرّك المؤشرات حسب أولوياتك.</p>
   <div class="sliders">
-    <label for="water_saving"><span>توفير الماء</span><output id="out-water_saving">30</output></label><input type="range" min="0" max="100" step="5" id="water_saving" value="30"/>
-    <label for="soil_building"><span>تحسين التربة</span><output id="out-soil_building">25</output></label><input type="range" min="0" max="100" step="5" id="soil_building" value="25"/>
-    <label for="erosion_control"><span>تقليل التعرية</span><output id="out-erosion_control">20</output></label><input type="range" min="0" max="100" step="5" id="erosion_control" value="20"/>
-    <label for="income"><span>مرونة الدخل / العلف</span><output id="out-income">15</output></label><input type="range" min="0" max="100" step="5" id="income" value="15"/>
-    <label for="heat_risk"><span>تقليل مخاطر الحرارة</span><output id="out-heat_risk">10</output></label><input type="range" min="0" max="100" step="5" id="heat_risk" value="10"/>
+    <label for="water_saving"><span data-ar="💧 توفير الماء" data-en="💧 Water saving">💧 توفير الماء</span><output id="out-water_saving">30</output></label><input type="range" min="0" max="100" step="5" id="water_saving" value="30">
+    <label for="soil_building"><span data-ar="🌱 بناء التربة" data-en="🌱 Soil building">🌱 بناء التربة</span><output id="out-soil_building">25</output></label><input type="range" min="0" max="100" step="5" id="soil_building" value="25">
+    <label for="erosion_control"><span data-ar="▧ تقليل التعرية" data-en="▧ Erosion control">▧ تقليل التعرية</span><output id="out-erosion_control">20</output></label><input type="range" min="0" max="100" step="5" id="erosion_control" value="20">
+    <label for="income"><span data-ar="◆ دخل / علف" data-en="◆ Income / forage">◆ دخل / علف</span><output id="out-income">15</output></label><input type="range" min="0" max="100" step="5" id="income" value="15">
+    <label for="heat_risk"><span data-ar="☀ مخاطر الحرارة" data-en="☀ Heat risk">☀ مخاطر الحرارة</span><output id="out-heat_risk">10</output></label><input type="range" min="0" max="100" step="5" id="heat_risk" value="10">
   </div>
-  <details class="advanced"><summary>اختبار ضغط افتراضي · Scenario</summary>
-    <label for="rainPct" class="slider-text"><span>تغيّر الهطول (%)</span><output id="out-rainPct">0</output></label><input type="range" min="-50" max="50" step="5" value="0" id="rainPct"/>
-    <label for="tempDeltaC" class="slider-text"><span>تغيّر الحرارة (°C)</span><output id="out-tempDeltaC">0</output></label><input type="range" min="-5" max="5" step="0.5" value="0" id="tempDeltaC"/>
-    <p class="fineprint">هذا اختبار إجهاد للفرضيات، وليس توقعًا مناخيًا صادرًا عن NASA.</p>
-  </details>
-  <button type="submit" class="btn-main" id="submit"><span>حلّل استراتيجيات التناوب</span><span>↙</span></button>
-  <p class="sidebar-foot">لا يحتاج إنشاء حساب. البيانات الشخصية لا تُحفظ في هذه النسخة.</p>
+  <details class="advanced scenario-block"><summary data-ar="اختبار إجهاد افتراضي · Scenario" data-en="Hypothetical stress test · Scenario">اختبار إجهاد افتراضي · Scenario</summary><p class="scenario-warning" data-ar="⚠ فرضيات للتجربة، ليست توقعات صادرة عن NASA." data-en="⚠ What-if assumptions, not NASA forecasts.">⚠ فرضيات للتجربة، ليست توقعات صادرة عن NASA.</p><label for="rainPct" class="slider-text"><span data-ar="تغيّر الهطول (%)" data-en="Rainfall change (%)">تغيّر الهطول (%)</span><output id="out-rainPct">0</output></label><input type="range" min="-50" max="50" step="5" value="0" id="rainPct"><label for="tempDeltaC" class="slider-text"><span data-ar="تغيّر الحرارة (°C)" data-en="Temperature change (°C)">تغيّر الحرارة (°C)</span><output id="out-tempDeltaC">0</output></label><input type="range" min="-5" max="5" step="0.5" value="0" id="tempDeltaC"></details>
+  <p class="fineprint" data-ar="أوزان المعايير تُطبّع إلى مجموع 100%؛ هذه ليست نسب نجاح زراعي." data-en="Priority weights are normalized to 100%. They are not crop success probabilities.">أوزان المعايير تُطبّع إلى مجموع 100%؛ هذه ليست نسب نجاح زراعي.</p>
+ </div>
+ <div class="wizard-actions"><button type="button" id="prev-step" class="btn-step secondary" disabled><span data-ar="السابق" data-en="Back">السابق</span></button><button type="button" id="next-step" class="btn-step primary"><span data-ar="التالي" data-en="Next">التالي</span><span aria-hidden="true">←</span></button><button type="submit" class="btn-main hidden" id="submit"><span data-ar="قارن استراتيجيات التناوب" data-en="Compare rotations">قارن استراتيجيات التناوب</span><span aria-hidden="true">↗</span></button></div>
+ <p class="sidebar-foot" data-ar="لا يلزم حساب ولا نخزّن بياناتك الشخصية في هذا النموذج." data-en="No sign-up required. This demo does not store personal information.">لا يلزم حساب ولا نخزّن بياناتك الشخصية في هذا النموذج.</p>
  </form>
 </aside>
 <div class="content">
-  <section class="section-card preview"><div class="section-heading"><span class="section-number">MAP</span><div><h2>موقع التجربة</h2><p>نقطة تمثيلية، وليست حدود الأرض الحقيقية</p></div></div><div class="map-box"><iframe id="map" title="خريطة موقع الحقل" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin" aria-label="OpenStreetMap preview"></iframe><span class="map-pin">◎</span><span class="map-coords" id="coordinates">31.9000, 35.9000</span></div></section>
-  <div class="section-heading main-heading"><span class="section-number">03</span><div><h2>التحليل والمقارنة</h2><p>بيانات وأدلة واضحة لكل قرار</p></div></div>
-  <section id="empty" class="section-card empty"><div class="empty-icon">◎</div><h2>جاهز نقرأ حقلَك؟</h2><p>اختر مصدر البيانات واضغط «حلّل استراتيجيات التناوب» لتظهر المؤشرات والخيارات والمخاطر.</p><span>NASA POWER · SoilGrids · MODIS (عند التوفر)</span></section>
-  <section id="loading" class="section-card empty hidden" aria-live="polite"><div class="spinner"></div><h2>جارٍ تجهيز المقارنة...</h2><p>عند اختيار Live، قد تحتاج بيانات NASA بعض الوقت في أول طلب؛ تُحفظ النتائج المناخية في Cache للتكرار.</p></section>
-  <section id="error" class="error-panel hidden" aria-live="assertive"><b>تعذّر إكمال التحليل</b><p id="error-text"></p><button id="retry" class="btn-ghost" type="button">إعادة المحاولة</button></section>
-  <div id="results" class="hidden">
-   <section class="result-banner" id="result-banner"><div><span class="eyebrow">FIELD INTELLIGENCE</span><h2 id="result-title">نتائج مقارنة الاستراتيجيات</h2><p id="result-subtitle"></p></div><button id="print" class="btn-print no-print">⎙ حفظ تقرير PDF</button></section>
-   <div id="warnings" class="warnings"></div>
-   <div class="kpis" id="kpis"></div>
-   <div class="section-heading main-heading"><span class="section-number">04</span><div><h2>استراتيجيات التناوب</h2><p>الدرجة تمثل تقييمًا نسبيًا لافتراضات النموذج، وليست احتمال نجاح المحصول.</p></div></div>
-   <div id="strategy-cards" class="cards"></div>
-   <section class="section-card timeline-card"><div class="section-heading"><span class="section-number">05</span><div><h2>ذاكرة الحقل المناخية</h2><p>متوسطات الأشهر التاريخية، وليست توقعًا للسنة القادمة</p></div></div><div class="timeline-legend"><span><i class="legend-rain"></i> هطول (مم)</span><span><i class="legend-heat"></i> أيام حرارة عالية</span><span><i class="legend-ndvi"></i> NDVI إن توفر</span></div><div id="timeline" class="timeline"></div><p class="fineprint" id="timeline-note"></p></section>
-   <section class="section-card source-card"><div class="section-heading"><span class="section-number">06</span><div><h2>مصادر الأدلة وحدودها</h2><p>رصد بالأقمار، مناخ مُنمذج، استنتاجات، وافتراضات الخبراء</p></div></div><div id="sources" class="sources"></div><details class="advanced"><summary>منهجية الحساب والافتراضات</summary><div id="methodology" class="methodology"></div></details></section>
-  </div>
+ <section class="section-card preview"><div class="section-heading"><span class="section-number">◉</span><div><h2 data-ar="موقع الحقل" data-en="Field location">موقع الحقل</h2><p data-ar="نقطة على الخريطة؛ لا تمثل حدود حقل حقيقية" data-en="A map point, not actual field boundaries">نقطة على الخريطة؛ لا تمثل حدود حقل حقيقية</p></div></div><div class="map-box"><iframe id="map" title="Field location on OpenStreetMap" loading="lazy" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin"></iframe><span class="map-coords" id="coordinates" dir="ltr">31.9000, 35.9000</span></div><div class="map-caption"><span>ⓘ</span><span data-ar="بيانات المنطقة قد تكون أقل دقة من مساحة مزرعتك." data-en="Regional data can be much coarser than your individual field.">بيانات المنطقة قد تكون أقل دقة من مساحة مزرعتك.</span></div></section>
+ <div class="section-heading main-heading"><span class="section-number">02</span><div><h2 data-ar="لوحة النتائج" data-en="Your analysis dashboard">لوحة النتائج</h2><p data-ar="النتائج، الثقة، والمفاضلات في مكان واحد" data-en="Results, confidence, and trade-offs in one place">النتائج، الثقة، والمفاضلات في مكان واحد</p></div></div>
+ <section id="empty" class="section-card empty"><div class="empty-icon">▥</div><h2 data-ar="جاهز لمقارنة خطط الموسم؟" data-en="Ready to compare rotations?">جاهز لمقارنة خطط الموسم؟</h2><p data-ar="اضغط «جرّب بحقل نموذجي» لتظهر النتائج فورًا، أو أدخل تفاصيل أرضك في الخطوات الثلاث." data-en="Select “Try a sample field” for an illustrative comparison, or enter your own details in the three-step form.">اضغط «جرّب بحقل نموذجي» لتظهر النتائج فورًا، أو أدخل تفاصيل أرضك في الخطوات الثلاث.</p><span>BASELINE + 3 ALTERNATIVES · P5–P95</span></section>
+ <section id="loading" class="section-card empty hidden" aria-live="polite"><div class="skeleton-line"></div><div class="skeleton-line short"></div><div class="skeleton-cards"><span></span><span></span><span></span></div><h2 data-ar="جارٍ تجهيز المقارنة…" data-en="Building the comparison…">جارٍ تجهيز المقارنة…</h2><p data-ar="قد يستغرق الجلب الحي بعض الوقت في أول طلب." data-en="The first live data fetch may take longer.">قد يستغرق الجلب الحي بعض الوقت في أول طلب.</p></section>
+ <section id="error" class="error-panel hidden" aria-live="assertive"><b data-ar="تعذّر إكمال التحليل" data-en="Unable to complete analysis">تعذّر إكمال التحليل</b><p id="error-text"></p><button id="retry" class="btn-ghost" type="button" data-ar="إعادة المحاولة" data-en="Retry">إعادة المحاولة</button></section>
+ <div id="results" class="hidden" aria-live="polite">
+  <section class="result-banner" id="result-banner"><div><span class="eyebrow">ROTATION COMPARISON</span><h2 id="result-title">نتائج المقارنة</h2><p id="result-subtitle"></p></div><button type="button" id="print" class="btn-print no-print"><span aria-hidden="true">⎙</span> <span data-ar="احفظ تقرير PDF" data-en="Save PDF report">احفظ تقرير PDF</span></button></section>
+  <div id="warnings" class="warnings"></div>
+  <div class="kpis" id="kpis"></div>
+  <div class="section-heading main-heading"><span class="section-number">03</span><div><h2 data-ar="قارن خطط التناوب" data-en="Compare rotation strategies">قارن خطط التناوب</h2><p data-ar="الدرجات نسبية، وليست احتمال النجاح الفعلي." data-en="Scores are relative model comparisons, not success probabilities.">الدرجات نسبية، وليست احتمال النجاح الفعلي.</p></div></div>
+  <div class="strategy-legend"><span><i class="shape circle"></i><span data-ar="التناوب الحالي" data-en="Baseline">التناوب الحالي</span></span><span><i class="shape square"></i><span data-ar="توفير ماء" data-en="Water saving">توفير ماء</span></span><span><i class="shape triangle"></i><span data-ar="بناء التربة" data-en="Soil building">بناء التربة</span></span><span><i class="shape diamond"></i><span data-ar="دخل وعلف" data-en="Income / forage">دخل وعلف</span></span></div>
+  <div id="strategy-cards" class="cards"></div>
+  <section class="section-card timeline-card"><div class="section-heading"><span class="section-number">04</span><div><h2 data-ar="ذاكرة الحقل المناخية" data-en="Field climate timeline">ذاكرة الحقل المناخية</h2><p data-ar="مؤشرات تاريخية شهرية، وليست توقعات مستقبلية" data-en="Historical monthly indicators, not future forecasts">مؤشرات تاريخية شهرية، وليست توقعات مستقبلية</p></div></div><div class="timeline-legend"><span><i class="legend-rain"></i><span data-ar="الهطول (مم)" data-en="Rain (mm)">الهطول (مم)</span></span><span><i class="legend-heat"></i><span data-ar="أيام الحرارة" data-en="Hot days">أيام الحرارة</span></span><span><i class="legend-ndvi"></i> NDVI</span></div><div id="timeline" class="timeline"></div><p class="fineprint" id="timeline-note"></p></section>
+  <section class="section-card source-card"><div class="section-heading"><span class="section-number">05</span><div><h2 data-ar="من أين جاءت البيانات؟" data-en="Where does the evidence come from?">من أين جاءت البيانات؟</h2><p data-ar="🛰 رصد · 🧮 نموذج · 👤 افتراض" data-en="🛰 Observed · 🧮 Modelled · 👤 Assumed">🛰 رصد · 🧮 نموذج · 👤 افتراض</p></div></div><div id="sources" class="sources"></div><details class="advanced"><summary data-ar="المنهجية والحدود" data-en="Methodology and limitations">المنهجية والحدود</summary><div id="methodology" class="methodology"></div></details></section>
+ </div>
 </div></div>
-</main><footer><b>Field Shift</b><span>Research prototype · Supports, never replaces, local agronomy.</span><span>Data attribution: NASA POWER · NASA MODIS (if loaded) · ISRIC SoilGrids (if loaded). No NASA endorsement.</span></footer>
-<script type="module" src="/app.js"></script>
+</main>
+<footer><b>Field Shift</b><span data-ar="أداة للتخطيط؛ لا تستبدل المرشد الزراعي المحلي." data-en="Planning support; never a replacement for local agronomy.">أداة للتخطيط؛ لا تستبدل المرشد الزراعي المحلي.</span><span>Data: NASA POWER · MODIS (if loaded) · SoilGrids (if loaded). No NASA endorsement.</span></footer>
+<script type="module" src="./app.js"></script>
 </body></html>

@@ -1,0 +1,72 @@
+{
+  "crops": [
+    {
+      "id": "wheat",
+      "group": "cereal"
+    },
+    {
+      "id": "barley",
+      "group": "cereal"
+    },
+    {
+      "id": "oats",
+      "group": "cereal"
+    },
+    {
+      "id": "maize",
+      "group": "cereal"
+    },
+    {
+      "id": "sorghum",
+      "group": "cereal"
+    },
+    {
+      "id": "millet",
+      "group": "cereal"
+    },
+    {
+      "id": "chickpea",
+      "group": "legume"
+    },
+    {
+      "id": "lentil",
+      "group": "legume"
+    },
+    {
+      "id": "faba_bean",
+      "group": "legume"
+    },
+    {
+      "id": "vetch_cover",
+      "group": "cover"
+    },
+    {
+      "id": "clover_berseem",
+      "group": "forage"
+    },
+    {
+      "id": "alfalfa",
+      "group": "forage"
+    },
+    {
+      "id": "canola",
+      "group": "oilseed"
+    },
+    {
+      "id": "sunflower",
+      "group": "oilseed"
+    },
+    {
+      "id": "potato",
+      "group": "vegetable"
+    },
+    {
+      "id": "tomato",
+      "group": "vegetable"
+    },
+    {
+      "id": "fallow",
+      "group": "fallow"
+    }
+  ]
+}

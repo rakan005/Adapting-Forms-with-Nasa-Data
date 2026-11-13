@@ -27,3 +27,12 @@
 - استيراد MODIS وبيانات SoilGrids قد يحتاج إعدادًا منفصلًا وملفات محلية على الاستضافة.
 - لا تدخل بيانات شخصية حقيقية أو إحداثيات حقول حساسة دون موافقة المستخدم.
 - استبدال `main` تم مع إبقاء الفرع السابق للرجوع إليه عند الحاجة.
+
+## رابط معاينة التيم على GitHub Pages
+
+تحتوي `public/` على واجهة مستقلة تعمل في GitHub Pages باستخدام `Synthetic Demo` فقط.
+الصفحة الثابتة تستعمل نفس محرك MCDA/Monte Carlo المترجم من `src/core.ts`، لكنها لا تجلب NASA POWER.
+بعد تفعيل GitHub Pages بوضع **GitHub Actions** من Settings > Pages، سينشر `pages.yml` مجلد `public`.
+الرابط المتوقع بعد نجاح النشر: `https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/`.
+لا تقدّم هذا الرابط بوصفه NASA live analysis: بيانات المناخ في نسخة المعاينة مصطنعة وواضحة التسمية.
+لتفعيل Live يجب نشر Node server على Render أو استضافة مماثلة. لا يمكن لـ GitHub Pages تشغيل Node API.

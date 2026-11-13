@@ -1,106 +1,201 @@
-# Field Shift — Adapting Farms with NASA Data
+# Field Shift — Adapting Forms with NASA Data
 
-**NASA Space Apps Challenge 2026 | runnable Node.js + TypeScript MVP**
+**Explore what to plant next—not just which crop, but which rotation could make a field more resilient.**
 
-A bilingual-friendly Arabic/English-technical decision-support prototype comparing **the farmer's current crop rotation (baseline)** with **three alternative rotations**. It uses NASA POWER historical climate **only when successfully fetched**, optional quality-filtered MODIS NDVI and optional SoilGrids estimates, transparent expert crop traits, user priorities, MCDA, and seeded Monte Carlo sensitivity analysis.
+Field Shift is an experimental, bilingual crop-rotation **decision-support prototype** for NASA Space Apps Challenge 2026. It compares the farmer's current rotation with three alternatives and explains the trade-offs in water, soil health, erosion, income flexibility, and heat risk. The scores show model comparisons and uncertainty—not guarantees or instructions to plant.
 
-**Repository reset (Nov 13, 2026):** This runnable Node.js + TypeScript MVP is the main-branch project. The earlier Spring Boot + React implementation is retained in Git history and the `backup-before-field-shift-mvp-2026-11-13` branch. Former account, subscription, and chatbot features were intentionally not migrated into the competition MVP. This is an experimental decision-support prototype, not a production farmer-account platform.
+**[Open the interactive team preview](https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/)** · [Data provenance](DATA_SOURCES.md) · [Architecture](docs/architecture.md) · [Contribution guide](CONTRIBUTING.md)
 
-## Quick start
+> **Important:** GitHub Pages is an openly accessible **Synthetic Demo**. It does not retrieve NASA data. Real NASA POWER access requires the Node.js server in **Live** mode and a successful external API request. Synthetic values are **not observations, NASA measurements, forecasts, or substitutes for real data**.
 
-Requirements: **Node.js 22.16+**. No `npm install` or external Node packages required.
+## Overview
+
+Field Shift aims to make crop-rotation trade-offs understandable for farmers and local advisors. It combines farmer-entered field information, historical climate indicators, optional vegetation and soil datasets, and explicit expert-assumption crop traits. Results identify evidence, information gaps, and issues that need local agronomic review.
+
+The current MVP is intentionally a **decision aid**, not a field-scale crop-yield predictor, a commercial recommendation service, or a replacement for a local agronomist.
+
+## Features
+
+- **Four rotation plans:** one editable farmer baseline plus three alternative sequences.
+- **Farmer priorities:** interactive weights for water saving, soil building, erosion control, income/forage, and heat resilience.
+- **Explainable scoring:** multi-criteria decision analysis (MCDA), criterion breakdowns, evidence, benefits, gaps, and risks.
+- **Visible uncertainty:** seeded Monte Carlo sensitivity analysis with mean, P5–P95 range, and ranking stability; these are not probabilities of agricultural success.
+- **Historical field context:** monthly rainfall and heat indicators, with NDVI/bare-field information only when suitable vegetation data are loaded.
+- **What-if scenarios:** hypothetical rainfall and temperature adjustments, explicitly not forecasts.
+- **Evidence labels:** distinguish modelled climate, satellite observations, locally entered measurements, and expert assumptions.
+- **Arabic / English interface**, responsive layout, educational map preview, and browser print-to-PDF.
+- **Two honest operating modes:** a live NASA POWER-backed Node.js service or a clearly marked offline-style synthetic browser demonstration.
+
+## How It Works
+
+1. **Describe the field:** enter coordinates, area in Jordanian dunums, water access, current crop rotation, and optionally a real laboratory soil organic carbon (SOC) value.
+2. **Choose priorities:** adjust sliders for the five evaluation criteria. An exploratory climate stress test is optional.
+3. **Load evidence:** the Node.js Live backend requests historical NASA POWER data; MODIS NDVI and SoilGrids are included only if corresponding, location-matched data are available. Browser-only GitHub Pages instead uses synthetic climate.
+4. **Compare alternatives:** the shared evaluation model scores the baseline and three rotation candidates using documented crop-trait assumptions and derived climate features.
+5. **Inspect uncertainty and limits:** read mean scores, P5–P95 bands, relative rank stability, explanations, source provenance, and what requires local review.
+
+**Under the hood:** daily POWER values yield historical rainfall, temperature, approximate evapotranspiration/deficit, heat and frost indicators. A transparent MCDA model combines those features with farmer priorities and assumption-based crop characteristics. Monte Carlo reruns the model under specified input perturbations. These are **model-sensitivity intervals**, not a validated chance of yield or success.
+
+## Data Sources
+
+| Source | Role in the prototype | Availability and caveats |
+| --- | --- | --- |
+| [NASA POWER](https://power.larc.nasa.gov/) | Historical daily **T2M**, **T2M_MAX**, **T2M_MIN**, and **PRECTOTCORR** climate variables; used to derive regional climate features in Live mode. | Requested through the NASA POWER API for 2020–2024. Values are gridded/modelled regional estimates, **not direct field-scale satellite measurements**. They appear only after a successful fetch or valid saved cache. |
+| [NASA MODIS NDVI via ORNL DAAC](https://modis.ornl.gov/) | Optional MOD13Q1 vegetation-index evidence for seasonal cover and exploratory bare-ground periods. | Requires a separate fetch/import; quality flags are filtered. MODIS's approximately 250 m footprint can mix small parcels with neighbors. **Not automatically loaded by the browser demo.** |
+| [ISRIC SoilGrids](https://soilgrids.org/) | Optional modelled soil properties including SOC, where available; user-entered lab SOC can be provided separately. | **Not a NASA dataset.** SoilGrids REST access may be unavailable; soil estimates are not laboratory measurements. |
+| Farmer inputs and crop catalog | Current rotation, water source, priorities, and expert-assumption crop traits. | Crop scores and local thresholds are illustrative, not validated measurements of yield, prices, or farm conditions. |
+| [OpenStreetMap](https://www.openstreetmap.org/) | Optional field-center map context. | Not a parcel-boundary detector. Map tiles can expose entered coordinates to an external provider. |
+
+All NASA source names describe **potential inputs**; the actual response must identify which datasets were successfully loaded. See [DATA_SOURCES.md](DATA_SOURCES.md) for endpoints, provenance, limitations, and processing, and [VERIFICATION.md](VERIFICATION.md) for testing status.
+
+## Live vs Synthetic Demo
+
+| | **Live mode (Node.js)** | **Synthetic Demo (GitHub Pages or Node.js)** |
+| --- | --- | --- |
+| Climate input | Actual NASA POWER historical API response or validated cache | Generated illustrative climate data |
+| NASA network access | **Required** for a first uncached request | **Not used** |
+| MODIS / SoilGrids | Optional, separate location-checked imports or user soil entry | Not loaded as scientific evidence |
+| Intended use | Exploratory analysis **after** checking data provenance | UI demonstration, teaching, and interaction testing |
+| If NASA API fails | Returns a clear error; **no silent substitution** | Runs independently, prominently marked **SYNTHETIC** |
+| Scientific interpretation | Regional historical indicators with explicit limitations | **No scientific claims or real-world agricultural advice** |
+
+**[Team preview — Synthetic Demo only](https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/)**
+
+GitHub Pages serves static files and **cannot execute the TypeScript/Node.js server or fetch through its backend**. Deploy the server on a Node-compatible service to offer the actual Live mode on a publicly accessible domain; see [DEPLOY_AR.md](DEPLOY_AR.md). Do not describe the Pages preview as a NASA Live deployment.
+
+## Tech Stack
+
+- **Backend:** Node.js **22.16+**, TypeScript, built-in HTTP server; no external Node runtime dependencies.
+- **Frontend:** responsive HTML, CSS, and JavaScript modules; RTL and English support.
+- **Decision engine:** shared MCDA and deterministic-seed Monte Carlo implementation (TypeScript, plus a browser-distributed JavaScript module).
+- **Research/data utilities:** Python scripts for NASA POWER, MODIS NDVI, SoilGrids, feature extraction, comparison and validation.
+- **Hosting:** GitHub Pages for the static synthetic demo; Docker or a Node-compatible host for the full API.
+- **CI:** GitHub Actions runs automated Node tests and JavaScript syntax checks.
+
+The older Spring Boot/React prototype remains in Git history and the backup branch; it is **not** the current runtime. The repository is public and intentionally does not include farmer accounts, subscription services, or an authenticated application.
+
+## Limitations
+
+- NASA POWER is regional-scale and historical. Neither its temperature nor rainfall inputs are surveyed readings for a particular parcel.
+- NDVI and SoilGrids are **optional**. Missing, cloudy, mismatched, or unavailable observations must not be filled in as if observed.
+- Crop traits, sowing calendars, water penalties, bare-ground thresholds, and Soil SOC adjustments require independent local agronomic calibration.
+- MCDA rankings and Monte Carlo P5–P95 values are sensitive to model assumptions; **P(top)** represents ranking stability inside simulated perturbations, not the probability a crop will succeed.
+- Weather sliders represent **hypothetical stress tests**, not an authoritative climate forecast.
+- The illustrative coordinates near Amman (31.9, 35.9) are **not** an exact surveyed field. Supporting an input coordinate does **not** mean global crop suitability has been validated.
+- No ground-verified yield prediction, market forecast, insect/disease model, or farm-boundary extraction is provided. OpenStreetMap embeds may share coordinates with the map service.
+- Live requests need network access. Actual uptime of NASA/ORNL/ISRIC APIs and any public Node host must be checked separately. There is no fallback that rebrands synthetic data as NASA.
+- Browser printing produces a save-as-PDF view; there is no separate PDF generation service.
+
+## How to Run
+
+### Requirements
+
+- **Node.js 22.16 or newer**
+- A modern browser
+- Internet access to NASA POWER for first-time **Live** retrieval (not required for the synthetic demo)
+- Optional: Python 3 and the packages in `scripts/requirements.txt` for research scripts
+
+### Run the full application locally
 
 ```bash
+git clone https://github.com/rakan005/Adapting-Forms-with-Nasa-Data.git
+cd Adapting-Forms-with-Nasa-Data
 npm start
-# Visit http://localhost:3100
-npm test
 ```
 
-- **Live** (default): fetches real **NASA POWER** daily point values for 2020–2024 via NASA's HTTPS API, then caches only successful results in `data/cache/` (not committed). A blocked API returns **503 DATA_UNAVAILABLE**, with no fabricated replacement.
-- **Synthetic Demo**: opt in using the data-mode selector. The output prominently says **synthetic, NOT NASA** and returns low confidence. Only use it to demonstrate app mechanics, never as a valid NASA-supported submission.
-- Input coordinates: default demonstration location near Amman (31.9, 35.9), not a surveyed parcel. Other coordinates are accepted as **exploratory only**. Local crop suitability and season calendars have NOT been adapted globally.
-- Inputs: coordinates, required farm area (dunums), water source, the existing rotation, optional **farmer-reported lab SOC (g/kg, top 0–5cm)**, five priority sliders, optional hypothetical rainfall/temperature stress test.
-- Output: four ranked rotation cards, baseline, criterion breakdowns, explanations, evidence, benefits, gaps, local-check risks, sensitivity interval P5–P95, *P(top) = stability to assumptions, not likelihood of agricultural success*, historical monthly timeline, dataset sources/provenance, print-to-PDF report.
-- Real-world data is **not included in this ZIP**. Running the server with network access fetches it; generate NDVI and SoilGrids locally as shown below.
+Open **http://localhost:3100**. No `npm install` is required for the current Node runtime. Choose **Live** for a real NASA POWER fetch or **Synthetic Demo** for illustrative values. The backend reads the host's `PORT` environment variable (default: 3100).
 
-## Additional datasets (optional but valuable for the official challenge)
-
-The Python fetch scripts extracted from the user's `ALL_IN_ONE.md` reference are in `scripts/`; quality and missing-data handling were strengthened. They require outbound HTTPS and `pip install -r scripts/requirements.txt`.
+### Test
 
 ```bash
+npm test
+node --check public/app.js
+```
+
+The tests cover key model and input-validation behavior. A passing test run **does not establish** successful live NASA retrieval or field validation.
+
+### API routes
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| GET | `/api/health` | API health check |
+| GET | `/api/config` | Crop catalog, defaults, and evaluation options |
+| POST | `/api/evaluate` | Evaluate a field and rank four rotations |
+
+Example request body for `POST /api/evaluate`:
+
+```json
+{
+  "lat": 31.9,
+  "lon": 35.9,
+  "areaDunum": 12.5,
+  "waterSource": "RAINFED",
+  "currentRotation": ["wheat", "fallow"],
+  "weights": {
+    "water_saving": 30,
+    "soil_building": 25,
+    "erosion_control": 20,
+    "income": 15,
+    "heat_risk": 10
+  },
+  "scenario": { "rainPct": 0, "tempDeltaC": 0 },
+  "mode": "live"
+}
+```
+
+Set `"mode": "demo"` only for the openly identified synthetic teaching scenario.
+
+### Optional dataset preparation
+
+The Python scripts are **optional** and require working third-party data services; their live network behavior must be verified independently.
+
+```bash
+python -m pip install -r scripts/requirements.txt
 mkdir -p data/observations
 python scripts/power_fetch.py --lat 31.9 --lon 35.9 --start 2020-01-01 --end 2024-12-31 --out data/observations/power.csv
 python scripts/modis_ndvi_fetch.py --lat 31.9 --lon 35.9 --start 2020-01-01 --end 2024-12-31 --out data/observations/ndvi.csv
 python scripts/soilgrids_fetch.py --lat 31.9 --lon 35.9 --out data/observations/soil.json
 python scripts/features.py --power data/observations/power.csv --ndvi data/observations/ndvi.csv --lat 31.9 --out data/observations/features.json
-python scripts/validate_era5.py --power data/observations/power.csv --lat 31.9 --lon 35.9
 ```
 
-Node reads optional `data/observations/ndvi.csv` **only when `ndvi.meta.json` confirms the exact evaluation point**. It loads `soil.json` only when its coordinates match. The Python features and MCDA scripts serve as reference/cross-check; the interactive API recomputes features and scores in TypeScript, using real POWER from its own API/cache. The precomputed `features.json` and `power.csv` are not silently used as live data. For optional live SoilGrids retrieval, start with `FS_SOIL_LIVE=1 npm start` (API can fail; missing soil stays missing). **Important:** ISRIC states its SoilGrids REST API is currently temporarily paused, so prefer a verified local lab input, or an independent ISRIC download route. Do not block submission on the REST endpoint.
+The interactive TypeScript server **does not silently ingest** `power.csv` or `features.json` as live data. NDVI and soil files are used only when matching-location metadata is available; follow [DATA_SOURCES.md](DATA_SOURCES.md).
 
-**Power caching matters:** NASA POWER states repeated identical grid requests can be rate-limited. Use the cache, not many duplicate requests for the same location. The API's native resolution is not field-scale.
-
-## API
-
-| Route | Method | Description |
-|---|---|---|
-| `/api/health` | GET | Health check, no external API call |
-| `/api/config` | GET | Crop catalog, example rotations and weights |
-| `/api/evaluate` | POST | Validate and evaluate the field; real NASA by default |
-
-### JSON request example
-
-```json
-{
-  "lat": 31.9, "lon": 35.9, "areaDunum": 12.5,
-  "waterSource": "RAINFED",
-  "currentRotation": ["wheat", "fallow"],
-  "weights": {"water_saving":30,"soil_building":25,"erosion_control":20,"income":15,"heat_risk":10},
-  "scenario": {"rainPct":0,"tempDeltaC":0},
-  "mode": "live"
-}
-```
-
-The `mode: "demo"` variant is for local technical tests only. Crop IDs and scores come from `assets/crops.csv`. `currentRotation` replaces the baseline; three other options are from `assets/strategies.example.json`. Crop/region/sowing validation still needs an agronomist. The server uses built-in HTTP with same-origin requests; do not expose it as a production account system.
-
-## Scientific method
-
-1. NASA POWER daily T2M/T2M_MAX/T2M_MIN/PRECTOTCORR, full historical years, missing -999 converted to null, no invalid-year interpolation.
-2. Derive approximate reference ETo using Hargreaves–Samani, rain/ETo deficit, rainfall CV, hot days, frost days, long dry spells and monthly indicators. Heat (>35 °C), storm (>20 mm), dry (<1 mm), deficit normalization (1200 mm) are **initial uncalibrated model assumptions**, not official thresholds.
-3. Optional MODIS MOD13Q1 NDVI 250 m / 16 days; only `pixel_reliability=0`, and initial bare proxy NDVI<0.2. Cloud or unknown reliability does **not** become valid.
-4. Optional SoilGrids SOC 0–5 cm: **modelled** soil estimate, not a lab measurement. The MCDA soil-weight adjustment (<15 g/kg: ×1.15, otherwise ×1.05) is an explicitly **unvalidated heuristic**. Other soil properties are shown for review.
-5. Five criteria: `water_saving`, `soil_building`, `erosion_control`, `income`, `heat_risk`. Crop traits 1–5 are **expert assumptions**; they are NOT NASA observations, measured yields, prices, or scientifically calibrated probabilities.
-6. Monte Carlo perturbs expert crop trait scores, normalized farmer priorities via Dirichlet, and climate features according to completeness. Fixed seed 2026, 650 iterations for repeatable UI output. Display mean, 5th/95th percentile and chance to rank first **within those model perturbations only**. A low-data-quality run gets lower confidence.
-7. A `fallow` season may reduce demand for irrigation but is penalized in erosion control; rainfed/limited water-source modes apply an explicitly unvalidated penalty for water-demanding rotations. The trade-off is explicit. Crop-family changes are indicative only.
-8. All candidate strategies are exploratory; market prices, pest history, labor, local legal water rights, parcel-scale NDVI, and ground soil tests remain unresolved.
-
-See [DATA_SOURCES.md](DATA_SOURCES.md) and [docs/architecture.md](docs/architecture.md) for provenance and diagrams.
-
-## Validation and known limits
-
-The automated tests (`npm test`) cover schema and missing sentinels, NDVI unknown quality, complete historical years, scenario stress test, invalid/zero weights, reproducibility, confidence, baseline updating, and input validation. The scripts' network fetchers **have not been exercised against the external NASA/ORNL/ISRIC services inside this isolated build environment**. Do not claim real data ingestion succeeds until it runs successfully on a networked machine. Validate the source's current dataset version and API response before judging.
-
-The UI has no authentication: it intentionally provides public access without signing up, as the challenge demo requires. The embedded OpenStreetMap map is a center-point preview only, NOT farm boundary extraction. The report uses the browser's print-to-PDF, not server-side PDF generation.
-
-## Deployment
+### Docker and deployment
 
 ```bash
 docker build -t field-shift-mvp .
 docker run --rm -p 3100:3100 -e PORT=3100 field-shift-mvp
 ```
 
-A host with outbound access to `power.larc.nasa.gov` is necessary. Persistent storage for `data/cache/` is recommended for production demonstrations. The Docker image contains only the current TypeScript MVP, not the legacy Java app. Default user inputs are illustrative Jordan values; other geographies must be reviewed locally.
+The public static demo is published through [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The Node app needs separate hosting for Live mode. Use persistent `data/cache/` storage where practical and do not hammer the POWER API with identical requests. See [DEPLOY_AR.md](DEPLOY_AR.md).
 
-## AI and submission integrity
+## Screenshots
 
-- **AI assistance used:** ChatGPT (OpenAI GPT-6) assisted in authoring TypeScript, frontend, tests, documentation and adapting the reference scripts; every result still requires human review and testing. Disclose AI in the NASA Space Apps 2026 submission form and repository. No AI-generated imagery or NASA identity assets are bundled.
-- **Open data attributions:** NASA POWER, NASA MODIS (only if loaded), ISRIC SoilGrids (only if loaded), OpenStreetMap base map. NASA does not endorse this project.
-- Keep the project page, demo subtitles or max 7 slides, dataset evidence, and all final submission fields **in English**. See `SUBMISSION_EN.md`.
-- **Pre-existing work / originality:** The user's Spring Boot/React work predates the event, and this standalone implementation may be prepared in advance as well. Check NASA Space Apps 2026 rules on pre-existing work, eligible original work and disclosure before entering a competition; do not misrepresent when code was written.
-- This build documents testable code but **does not prove an online deployment, approved local agronomy validation, or submitted competition entry**.
+**No screenshots are bundled or claimed yet.** Please capture **real screenshots of the running interface** before adding image references to this README.
 
-## Original project and deployment
+Suggested authentic captures:
+- Desktop landing page, showing the data-mode distinction.
+- Actual **Synthetic Demo** comparison, with its synthetic label clearly visible.
+- Mobile viewport, showing the three-step input workflow.
+- **Live** evidence panel **only after** successfully fetching and verifying actual NASA POWER data.
 
-The older Java + React version is preserved in the GitHub backup branch. See [INTEGRATION_AR.md](INTEGRATION_AR.md) for rollback information and [DEPLOY_AR.md](DEPLOY_AR.md) for Node hosting instructions. The original project references are preserved under `references/`; TypeScript diagrams are in `docs/architecture.md`. GitHub hosts **code**, but GitHub Pages alone cannot run a Node.js API; deploy the app to a Node-compatible host to enable live NASA data fetching.
+Put your own images in `docs/screenshots/` (for example, `overview-desktop.png`, `comparison-demo.png`, `mobile-input.png`). Then add ordinary Markdown image references here; do **not** link to placeholder filenames or invent results. See [screenshots instructions](docs/screenshots/README.md).
 
-The embedded public OpenStreetMap iframe requests map tiles centered on the entered coordinates from an external service. Field location may therefore be visible to the mapping provider; do not enter a private exact parcel location unless comfortable with that disclosure. For a private offline demo, remove the iframe or replace it with a local static basemap.
+## Contributing
+
+Issues and narrowly scoped improvements are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) for testing, documentation, data-source labeling, and integrity requirements.
+
+## AI use, attribution and originality
+
+- AI assistance was used to help author and adapt frontend code, TypeScript, tests and documentation. Human reviewers must verify all outputs and disclose AI use in competition submissions.
+- No NASA endorsement or NASA identity/logo assets are included. NASA POWER/MODIS and ISRIC/OpenStreetMap are credited as **independent data providers** when applicable.
+- Some work and the original Spring Boot/React prototype predate the hackathon. Check the competition's specific originality, eligible-work, and AI disclosure rules; do not misrepresent dates or source ownership.
+- External datasets, imagery, fonts, and material preserved in `references/` may carry separate attribution or license terms; the repository's MIT license **does not relicense third-party material**.
+
+## License
+
+Project-owned source code and original documentation are released under the **MIT License**; see [LICENSE](LICENSE). Third-party datasets, mapping tiles, fonts, and other externally supplied resources retain their own licenses and terms.
+
+---
+
+*Field Shift supports a farmer's decision; it does not replace a qualified local agronomist. All rotation strategies are possibilities for review, not prescriptions.*

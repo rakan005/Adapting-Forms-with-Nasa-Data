@@ -171,15 +171,17 @@ The public static demo is published through [`.github/workflows/pages.yml`](.git
 
 ## Screenshots
 
-**No screenshots are bundled or claimed yet.** Please capture **real screenshots of the running interface** before adding image references to this README.
+The two screenshots below are **genuine captures of the running local Field Shift interface** from November 13, 2026—not generated mockups. They document the layout only; **no NASA results or actual field outcomes appear in these images**. Informational sections added subsequently may not be visible in these earlier UI captures.
 
-Suggested authentic captures:
-- Desktop landing page, showing the data-mode distinction.
-- Actual **Synthetic Demo** comparison, with its synthetic label clearly visible.
-- Mobile viewport, showing the three-step input workflow.
-- **Live** evidence panel **only after** successfully fetching and verifying actual NASA POWER data.
+### Desktop layout
 
-Put your own images in `docs/screenshots/` (for example, `overview-desktop.png`, `comparison-demo.png`, `mobile-input.png`). Then add ordinary Markdown image references here; do **not** link to placeholder filenames or invent results. See [screenshots instructions](docs/screenshots/README.md).
+![Field Shift desktop interface — captured UI, no NASA results](docs/screenshots/overview-desktop.webp)
+
+### Mobile input layout
+
+![Field Shift responsive mobile input form — captured UI, no NASA results](docs/screenshots/mobile-input.webp)
+
+To update these images, capture the actual current interface in a browser. For any result screenshot, keep **Synthetic Demo** visibly labelled; include a Live data screenshot **only after** an actual successful NASA POWER fetch with verified source details. See [screenshot capture instructions](docs/screenshots/README.md). Never invent imagery, data values, or test outcomes.
 
 ## Contributing
 

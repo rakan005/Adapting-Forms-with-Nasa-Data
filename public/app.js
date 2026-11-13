@@ -1,5 +1,5 @@
-/** Field Shift UI. Static GitHub Pages uses explicitly synthetic browser demo only.
- *  A Node deployment can also offer real NASA POWER through /api/evaluate. */
+/** Field Shift UI: GitHub Pages supports direct NASA POWER or a separate synthetic demo.
+ * Node deployments retain the existing /api/evaluate backend. */
 const $ = id => document.getElementById(id);
 const ROOT = new URL('./', import.meta.url);
 const url = path => new URL(path, ROOT);
@@ -54,7 +54,7 @@ function setStep(next){step=Math.max(1,Math.min(3,next));document.querySelectorA
 function setModeNote(){const demo=$('mode').value==='demo';$('mode-flag').classList.toggle('demo',demo);
   $('mode-flag-text').textContent=demo?str('⚠ تجربة توضيحية فقط','⚠ Synthetic educational demo'):str('● NASA POWER تاريخي','● Historical NASA POWER');
   $('mode-note').textContent=demo?str('تُستخدم بيانات مصطنعة بوضوح. ليست رصدًا من NASA.','Uses clearly labelled synthetic weather, never presented as NASA measurements.'):
-  str('الوضع الحي يحتاج خادم Node.js متصلًا بخدمة NASA POWER.','Live mode requires a connected Node.js server for NASA POWER.');}
+  staticPreview?str('GitHub Pages يجلب NASA POWER مباشرة عند نجاح الاتصال، ولا يستبدل البيانات عند الفشل.','GitHub Pages requests NASA POWER directly. Network or CORS errors never trigger a synthetic fallback.'):str('خادم Node.js يجلب NASA POWER.','Node.js backend fetches NASA POWER.');}
 function updateMap(){const lat=Number($('lat').value),lon=Number($('lon').value);if(!Number.isFinite(lat)||!Number.isFinite(lon)||Math.abs(lat)>90||Math.abs(lon)>180)return;
   const bbox=[lon-.035,lat-.02,lon+.035,lat+.02].map(n=>n.toFixed(5)).join(',');
   $('map').src=`https://www.openstreetmap.org/export/embed.html?bbox=${encodeURIComponent(bbox)}&layer=mapnik&marker=${lat}%2C${lon}`;
@@ -73,8 +73,9 @@ async function submit(){if(!loaded||!validate())return;const input=collect(),tic
   clearPending();requestController=new AbortController();$('empty').classList.add('hidden');$('results').classList.add('hidden');$('error').classList.add('hidden');$('loading').classList.remove('hidden');$('submit').disabled=true;
   try{
     let result;
-    if(staticPreview){if(input.mode!=='demo')throw new Error(str('هذه معاينة GitHub Pages ثابتة. بيانات Live تحتاج نشر Backend على Render. اختر Synthetic Demo.','GitHub Pages is a static preview. Live NASA data need a deployed backend. Choose Synthetic Demo.'));
-      const {evaluateDemo}=await import('./demo-engine.js');result=await evaluateDemo(input);
+    if(staticPreview){
+      if(input.mode==='demo'){const {evaluateDemo}=await import('./demo-engine.js');result=await evaluateDemo(input);}
+      else{const {evaluateLiveNASA}=await import('./browser-live.js');result=await evaluateLiveNASA(input,{signal:requestController.signal});}
     }else{
       const r=await fetch(url('api/evaluate'),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(input),signal:requestController.signal});
       const out=await r.json();if(!r.ok)throw new Error(out.message||`API HTTP ${r.status}`);result=out;}
@@ -131,6 +132,7 @@ async function boot(){const fromUrl=new URLSearchParams(location.search);if(from
   $('prev-step').addEventListener('click',()=>setStep(step-1));$('next-step').addEventListener('click',()=>setStep(step+1));
   document.querySelectorAll('[data-goto-step]').forEach(b=>b.addEventListener('click',()=>setStep(Number(b.dataset.gotoStep))));
   $('quick-demo').addEventListener('click',()=>{$('mode').value='demo';setModeNote();$('lat').value='31.9';$('lon').value='35.9';$('areaDunum').value='12.5';$('waterSource').value='RAINFED';$('crop1').value='wheat';$('crop2').value='fallow';$('crop3').value='';updateMap();submit();});
+  $('quick-live').addEventListener('click',()=>{$('mode').value='live';setModeNote();updateMap();submit();});
   $('mode').addEventListener('change',()=>{setModeNote();schedule();});
   for(const k of [...Object.keys(labels),'rainPct','tempDeltaC']){$(k).addEventListener('input',()=>{$('out-'+k).textContent=$(k).value;schedule();});}
   for(const id of ['crop1','crop2','crop3','waterSource','soilSocGkg'])$(id).addEventListener('change',schedule);
@@ -139,9 +141,8 @@ async function boot(){const fromUrl=new URLSearchParams(location.search);if(from
   $('farm-form').addEventListener('submit',e=>{e.preventDefault();submit();});
   try{const response=await fetch(url('api/config'),{signal:AbortSignal.timeout(5500)});if(!response.ok)throw new Error('No Node API');const conf=await response.json();availableCrops=conf.crops;}
   catch{staticPreview=true;const response=await fetch(url('demo-catalog.json'));if(!response.ok)throw new Error('Static catalog is unavailable');const conf=await response.json();availableCrops=conf.crops;
-    $('mode').value='demo';$('mode').querySelector('option[value=live]').disabled=true;}
+    $('mode').value='live';}
   loaded=true;setLanguage(lang);setStep(1);updateMap();
-  // Demo view should open with a meaningful result without requiring login or an API server.
-  if(staticPreview)submit();
+  // Browser Live is user-initiated to avoid unsolicited NASA POWER requests.
 }
 boot().catch(e=>showError(e.message||String(e)));

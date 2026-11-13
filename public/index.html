@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#2E6B3E">
-<meta name="description" content="Field Shift helps farmers explore four crop-rotation strategies, compare water and soil trade-offs, and understand uncertainty. GitHub Pages runs a clearly labelled Synthetic Demo; NASA POWER Live mode requires the Node.js backend.">
+<meta name="description" content="Field Shift helps farmers explore four crop-rotation strategies, compare water and soil trade-offs, and understand uncertainty. On GitHub Pages, choose direct NASA POWER Live historical data (when browser access succeeds) or a separate Synthetic Demo.">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Field Shift">
 <meta property="og:title" content="Field Shift | Crop Rotation Decision Support">
-<meta property="og:description" content="Explore crop-rotation trade-offs with explainable scores and uncertainty. This GitHub Pages preview uses synthetic demo data, not live NASA observations.">
+<meta property="og:description" content="Explore crop-rotation trade-offs with explainable scores and uncertainty. GitHub Pages can fetch real historical NASA POWER climate directly or run a clearly labelled synthetic demo.">
 <meta property="og:url" content="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/">
 <meta property="og:image" content="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/docs/screenshots/overview-desktop.webp">
 <meta property="og:image:type" content="image/webp">
@@ -18,7 +18,7 @@
 <meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Field Shift | Crop Rotation Decision Support">
-<meta name="twitter:description" content="Compare crop rotations and explore uncertainty. The public GitHub Pages preview uses synthetic data; NASA POWER Live mode requires a separate server.">
+<meta name="twitter:description" content="Compare crop rotations and explore uncertainty. Choose direct NASA POWER historical data or a separate clearly labelled synthetic demo on GitHub Pages.">
 <meta name="twitter:image" content="https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/docs/screenshots/overview-desktop.webp">
 <meta name="twitter:image:alt" content="Field Shift desktop interface preview; no actual NASA analysis results shown">
 <title>Field Shift | Crop rotation intelligence</title>
@@ -39,7 +39,7 @@
     <span class="eyebrow"><span class="dot"></span><span data-ar="الأرض أولًا، والقرار بالأدلة" data-en="EARTH DATA. FARMER KNOWLEDGE.">الأرض أولًا، والقرار بالأدلة</span></span>
     <h1 id="hero-title"><span data-ar="خطّط للموسم القادم." data-en="Plan the next season.">خطّط للموسم القادم.</span><br><em data-ar="وخلّي أرضك أقوى." data-en="Build stronger soil.">وخلّي أرضك أقوى.</em></h1>
     <p data-ar="قارن أربع خطط تناوب، افهم أثر الماء والمناخ والتربة، واعرف من أين جاءت كل معلومة وما الذي ما زلنا لا نعرفه." data-en="Compare four crop rotations. Explore water, climate and soil trade-offs, with transparent sources and clear uncertainty.">قارن أربع خطط تناوب، افهم أثر الماء والمناخ والتربة، واعرف من أين جاءت كل معلومة وما الذي ما زلنا لا نعرفه.</p>
-    <div class="hero-actions"><button id="quick-demo" type="button" class="hero-btn"><span data-ar="جرّب بحقل نموذجي" data-en="Try a sample field">جرّب بحقل نموذجي</span><span aria-hidden="true">↗</span></button><a href="#input-panel" class="hero-outline" data-ar="أدخل بيانات أرضك" data-en="Enter your field details">أدخل بيانات أرضك</a></div>
+    <div class="hero-actions"><button id="quick-live" type="button" class="hero-btn"><span data-ar="حلّل ببيانات NASA مباشرة" data-en="Analyze with live NASA data">حلّل ببيانات NASA مباشرة</span><span aria-hidden="true">↗</span></button><button id="quick-demo" type="button" class="hero-outline"><span data-ar="جرّب Synthetic Demo" data-en="Try Synthetic Demo">جرّب Synthetic Demo</span><span aria-hidden="true">↗</span></button><a href="#input-panel" class="hero-outline" data-ar="أدخل بيانات أرضك" data-en="Enter your field details">أدخل بيانات أرضك</a></div>
     <div class="hero-tags"><span>4 ROTATION PLANS</span><span>MCDA + P5–P95</span><span>NASA POWER · LIVE OPTIONAL</span></div>
   </div>
   <div class="hero-visual" aria-hidden="true"><div class="field-illustration"><div class="sun-circle"></div><div class="hill hill-back"></div><div class="hill hill-front"></div><div class="field-band field-band-one"></div><div class="field-band field-band-two"></div><div class="field-band field-band-three"></div><div class="soil-dots">• • • • •</div><div class="field-label">FIELD SHIFT / 2026</div></div><div class="hero-note note-a">◉ &nbsp; CLIMATE</div><div class="hero-note note-b">▦ &nbsp; SOIL</div><div class="hero-note note-c">◇ &nbsp; CHOICE</div></div>
@@ -49,17 +49,17 @@
   <div class="info-overview-head">
     <span class="eyebrow" data-ar="شفافية البيانات" data-en="DATA TRANSPARENCY">شفافية البيانات</span>
     <h2 id="mode-guide-heading" data-ar="ما الفرق بين Live وSynthetic Demo؟" data-en="Live vs Synthetic Demo: what's different?">ما الفرق بين Live وSynthetic Demo؟</h2>
-    <p data-ar="اختَر الوضع المناسب قبل التحليل. المعاينة على GitHub Pages تعرض مثالًا اصطناعيًا فقط، ولا تجلب NASA مباشرة." data-en="Choose your data mode before analysis. GitHub Pages is a synthetic-only preview; it does not fetch NASA data.">اختَر الوضع المناسب قبل التحليل. المعاينة على GitHub Pages تعرض مثالًا اصطناعيًا فقط، ولا تجلب NASA مباشرة.</p>
+    <p data-ar="GitHub Pages يتصل مباشرة بـNASA POWER عند اختيار Live ونجاح طلب المتصفح؛ Synthetic Demo خيار منفصل." data-en="Choose Live for direct historical NASA POWER data (when browser CORS allows) or the separate Synthetic Demo.">GitHub Pages يتصل مباشرة بـNASA POWER عند اختيار Live ونجاح طلب المتصفح؛ Synthetic Demo خيار منفصل.</p>
   </div>
   <div class="info-mode-grid">
     <article class="info-mode-card" aria-labelledby="live-card-title">
       <div class="info-card-top"><span class="info-mode-symbol" aria-hidden="true">☁</span><h3 id="live-card-title">Live Mode</h3></div>
-      <p data-ar="يعمل عبر خادم Node.js ويتصل بـNASA POWER للحصول على مناخ تاريخي حقيقي عند نجاح الطلب أو توفر Cache صالح. لا يعمل عبر GitHub Pages وحده." data-en="Runs through the Node.js server. Successful NASA POWER requests or valid caches provide real historical regional climate data. GitHub Pages alone cannot run Live mode.">يعمل عبر خادم Node.js ويتصل بـNASA POWER للحصول على مناخ تاريخي حقيقي عند نجاح الطلب أو توفر Cache صالح. لا يعمل عبر GitHub Pages وحده.</p>
+      <p data-ar="على GitHub Pages يطلب المتصفح NASA POWER مباشرة حسب الإحداثيات؛ نجاح الاتصال وCORS مطلوب ولا يوجد تبديل تلقائي للبيانات." data-en="On GitHub Pages the browser directly requests NASA POWER climate for your coordinates. Network and CORS access must succeed; never silently use synthetic values.">على GitHub Pages يطلب المتصفح NASA POWER مباشرة حسب الإحداثيات؛ نجاح الاتصال وCORS مطلوب ولا يوجد تبديل تلقائي للبيانات.</p>
       <span class="info-card-foot" data-ar="🧮 مؤشرات مناخ مُنمذجة — ليست قياسات حقل مباشرة" data-en="🧮 Modelled regional climate — not direct field measurements">🧮 مؤشرات مناخ مُنمذجة — ليست قياسات حقل مباشرة</span>
     </article>
     <article class="info-mode-card demo-info" aria-labelledby="demo-card-title">
       <div class="info-card-top"><span class="info-mode-symbol" aria-hidden="true">◇</span><h3 id="demo-card-title">Synthetic Demo</h3></div>
-      <p data-ar="بيانات مُولّدة لأغراض التعلم وتجربة التصميم والحسابات فقط. ليست بيانات NASA أو ملاحظات حقيقية أو توقعًا زراعيًا. هذا هو الوضع المتاح في رابط التيم." data-en="Generated example values for learning, UI preview, and algorithm demonstrations only. Not NASA data, observations, or agricultural forecasts. This is the mode available in the team preview.">بيانات مُولّدة لأغراض التعلم وتجربة التصميم والحسابات فقط. ليست بيانات NASA أو ملاحظات حقيقية أو توقعًا زراعيًا. هذا هو الوضع المتاح في رابط التيم.</p>
+      <p data-ar="بيانات مصطنعة للتعلم وتجربة التصميم والحسابات فقط، ليست رصد NASA ولا بديلًا عن Live." data-en="Generated educational data only; not NASA observations or agricultural forecasts, and entirely separate from Live.">بيانات مصطنعة للتعلم وتجربة التصميم والحسابات فقط، ليست رصد NASA ولا بديلًا عن Live.</p>
       <span class="info-card-foot" data-ar="⚠ نتائج اصطناعية للتوضيح — لا تُستخدم كدليل علمي" data-en="⚠ Synthetic results — not scientific evidence">⚠ نتائج اصطناعية للتوضيح — لا تُستخدم كدليل علمي</span>
     </article>
   </div>
@@ -82,7 +82,7 @@
  <div class="wizard-steps" role="tablist" aria-label="Steps"><button type="button" class="step-chip active" data-goto-step="1" aria-selected="true"><span>1</span><b data-ar="الموقع" data-en="Location">الموقع</b></button><button type="button" class="step-chip" data-goto-step="2" aria-selected="false"><span>2</span><b data-ar="المحاصيل" data-en="Crops">المحاصيل</b></button><button type="button" class="step-chip" data-goto-step="3" aria-selected="false"><span>3</span><b data-ar="أولوياتك" data-en="Priorities">أولوياتك</b></button></div>
  <form id="farm-form" novalidate>
  <div class="wizard-panel" data-step="1">
-  <div class="switch-box"><label class="switch-label" for="mode" data-ar="مصدر البيانات" data-en="Data source">مصدر البيانات</label><select id="mode" name="mode"><option value="live" data-ar="NASA POWER حقيقي (Live)" data-en="NASA POWER — live">NASA POWER حقيقي (Live)</option><option value="demo" data-ar="تجربة توضيحية (Synthetic Demo)" data-en="Synthetic demo — example">تجربة توضيحية (Synthetic Demo)</option></select><small id="mode-note" data-ar="الوضع الحي يحتاج خادمًا متصلًا بخدمة NASA POWER." data-en="Live mode requires the NASA POWER-connected server.">الوضع الحي يحتاج خادمًا متصلًا بخدمة NASA POWER.</small><div class="mode-flag" id="mode-flag"><span aria-hidden="true">●</span><span id="mode-flag-text">Live data mode</span></div></div>
+  <div class="switch-box"><label class="switch-label" for="mode" data-ar="مصدر البيانات" data-en="Data source">مصدر البيانات</label><select id="mode" name="mode"><option value="live" data-ar="NASA POWER حقيقي (Live)" data-en="NASA POWER — live">NASA POWER حقيقي (Live)</option><option value="demo" data-ar="تجربة توضيحية (Synthetic Demo)" data-en="Synthetic demo — example">تجربة توضيحية (Synthetic Demo)</option></select><small id="mode-note" data-ar="الوضع الحي يجلب بيانات NASA POWER التاريخية مباشرة عند نجاح الاتصال." data-en="Live historical NASA POWER data require successful provider and browser access.">الوضع الحي يجلب بيانات NASA POWER التاريخية مباشرة عند نجاح الاتصال.</small><div class="mode-flag" id="mode-flag"><span aria-hidden="true">●</span><span id="mode-flag-text">Live data mode</span></div></div>
   <div class="field-grid"><label><span data-ar="خط العرض Latitude" data-en="Latitude">خط العرض Latitude</span><input type="number" id="lat" min="-90" max="90" step="0.0001" value="31.9000" required></label><label><span data-ar="خط الطول Longitude" data-en="Longitude">خط الطول Longitude</span><input type="number" id="lon" min="-180" max="180" step="0.0001" value="35.9000" required></label></div>
   <label class="form-row"><span data-ar="مساحة الأرض (دونم)" data-en="Field area (dunums)">مساحة الأرض (دونم)</span><input id="areaDunum" type="number" min="0.01" max="100000" step="0.1" value="12.5" required></label>
   <details class="advanced"><summary data-ar="عندي تحليل تربة مخبري (اختياري)" data-en="I have a soil lab test (optional)">عندي تحليل تربة مخبري (اختياري)</summary><label class="inside"><span>SOC (g/kg) · 0–5cm</span><input type="number" min="0" max="300" step="0.1" id="soilSocGkg" placeholder="e.g. 14"></label><p class="fineprint" data-ar="أدخل رقمًا حقيقيًا من المختبر فقط. لا يمكن التحقق منه آليًا." data-en="Enter actual lab values only. This input is not verified independently.">أدخل رقمًا حقيقيًا من المختبر فقط. لا يمكن التحقق منه آليًا.</p></details>

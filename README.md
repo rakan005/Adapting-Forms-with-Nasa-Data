@@ -6,7 +6,7 @@ Field Shift is an experimental, bilingual crop-rotation **decision-support proto
 
 **[Open the interactive team preview](https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/)** · [Data provenance](DATA_SOURCES.md) · [Architecture](docs/architecture.md) · [Contribution guide](CONTRIBUTING.md)
 
-> **Important:** GitHub Pages is an openly accessible **Synthetic Demo**. It does not retrieve NASA data. Real NASA POWER access requires the Node.js server in **Live** mode and a successful external API request. Synthetic values are **not observations, NASA measurements, forecasts, or substitutes for real data**.
+> **Important:** GitHub Pages offers **direct browser NASA POWER Live** (real historical regional climate, if NASA responds and CORS allows) **and a separate Synthetic Demo**. Live never silently falls back to invented data. NASA POWER 2020–2024 history is not real-time weather or field-scale ground observation. MODIS NDVI and SoilGrids remain unavailable in the static browser mode unless independently added and validated.
 
 ## Overview
 
@@ -24,13 +24,13 @@ The current MVP is intentionally a **decision aid**, not a field-scale crop-yiel
 - **What-if scenarios:** hypothetical rainfall and temperature adjustments, explicitly not forecasts.
 - **Evidence labels:** distinguish modelled climate, satellite observations, locally entered measurements, and expert assumptions.
 - **Arabic / English interface**, responsive layout, educational map preview, and browser print-to-PDF.
-- **Two honest operating modes:** a live NASA POWER-backed Node.js service or a clearly marked offline-style synthetic browser demonstration.
+- **Two honest operating modes:** NASA POWER Live via browser (GitHub Pages) or the existing Node backend, and a separately labelled synthetic teaching mode.
 
 ## How It Works
 
 1. **Describe the field:** enter coordinates, area in Jordanian dunums, water access, current crop rotation, and optionally a real laboratory soil organic carbon (SOC) value.
 2. **Choose priorities:** adjust sliders for the five evaluation criteria. An exploratory climate stress test is optional.
-3. **Load evidence:** the Node.js Live backend requests historical NASA POWER data; MODIS NDVI and SoilGrids are included only if corresponding, location-matched data are available. Browser-only GitHub Pages instead uses synthetic climate.
+3. **Load evidence:** GitHub Pages Live directly requests NASA POWER historical climate from the visitor's browser. The optional Node backend supports the same POWER source plus separately imported location-matched NDVI and SoilGrids. Synthetic Demo remains separate.
 4. **Compare alternatives:** the shared evaluation model scores the baseline and three rotation candidates using documented crop-trait assumptions and derived climate features.
 5. **Inspect uncertainty and limits:** read mean scores, P5–P95 bands, relative rank stability, explanations, source provenance, and what requires local review.
 
@@ -50,18 +50,18 @@ All NASA source names describe **potential inputs**; the actual response must id
 
 ## Live vs Synthetic Demo
 
-| | **Live mode (Node.js)** | **Synthetic Demo (GitHub Pages or Node.js)** |
+| | **Live (GitHub Pages browser or Node.js)** | **Synthetic Demo (GitHub Pages or Node.js)** |
 | --- | --- | --- |
-| Climate input | Actual NASA POWER historical API response or validated cache | Generated illustrative climate data |
-| NASA network access | **Required** for a first uncached request | **Not used** |
-| MODIS / SoilGrids | Optional, separate location-checked imports or user soil entry | Not loaded as scientific evidence |
+| Climate input | Genuine NASA POWER historical API response (or validated Node backend cache) | Generated illustrative climate data |
+| NASA network access | **Required** on first uncached request; GitHub Pages additionally depends on provider CORS | **Not used** |
+| MODIS / SoilGrids | Not fetched by browser-only Live; optional location-checked imports are supported by Node backend, and user lab SOC can be entered | Not loaded as scientific evidence |
 | Intended use | Exploratory analysis **after** checking data provenance | UI demonstration, teaching, and interaction testing |
 | If NASA API fails | Returns a clear error; **no silent substitution** | Runs independently, prominently marked **SYNTHETIC** |
 | Scientific interpretation | Regional historical indicators with explicit limitations | **No scientific claims or real-world agricultural advice** |
 
-**[Team preview — Synthetic Demo only](https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/)**
+**[Open GitHub Pages — direct NASA POWER Live or Synthetic Demo](https://rakan005.github.io/Adapting-Forms-with-Nasa-Data/)**
 
-GitHub Pages serves static files and **cannot execute the TypeScript/Node.js server or fetch through its backend**. Deploy the server on a Node-compatible service to offer the actual Live mode on a publicly accessible domain; see [DEPLOY_AR.md](DEPLOY_AR.md). Do not describe the Pages preview as a NASA Live deployment.
+GitHub Pages does **not run a Node.js backend**, but its JavaScript can request the NASA POWER API directly when cross-origin (CORS) access is permitted. The new `public/browser-live.js` validates actual NASA responses before running the same MCDA and Monte Carlo engine. NASA/network/CORS errors are displayed and **never replaced with Synthetic Demo**. MODIS NDVI and SoilGrids are not automatically loaded in browser Live. See [DEPLOY_AR.md](DEPLOY_AR.md). Passing local tests does not prove a real browser request to NASA succeeded.
 
 ## Tech Stack
 
@@ -69,7 +69,7 @@ GitHub Pages serves static files and **cannot execute the TypeScript/Node.js ser
 - **Frontend:** responsive HTML, CSS, and JavaScript modules; RTL and English support.
 - **Decision engine:** shared MCDA and deterministic-seed Monte Carlo implementation (TypeScript, plus a browser-distributed JavaScript module).
 - **Research/data utilities:** Python scripts for NASA POWER, MODIS NDVI, SoilGrids, feature extraction, comparison and validation.
-- **Hosting:** GitHub Pages for the static synthetic demo; Docker or a Node-compatible host for the full API.
+- **Hosting:** GitHub Pages for browser-direct NASA POWER Live and Synthetic Demo; optional Docker/Node hosting for the full backend API.
 - **CI:** GitHub Actions runs automated Node tests and JavaScript syntax checks.
 
 The older Spring Boot/React prototype remains in Git history and the backup branch; it is **not** the current runtime. The repository is public and intentionally does not include farmer accounts, subscription services, or an authenticated application.
@@ -83,7 +83,7 @@ The older Spring Boot/React prototype remains in Git history and the backup bran
 - Weather sliders represent **hypothetical stress tests**, not an authoritative climate forecast.
 - The illustrative coordinates near Amman (31.9, 35.9) are **not** an exact surveyed field. Supporting an input coordinate does **not** mean global crop suitability has been validated.
 - No ground-verified yield prediction, market forecast, insect/disease model, or farm-boundary extraction is provided. OpenStreetMap embeds may share coordinates with the map service.
-- Live requests need network access. Actual uptime of NASA/ORNL/ISRIC APIs and any public Node host must be checked separately. There is no fallback that rebrands synthetic data as NASA.
+- Live browser requests require NASA POWER network access and CORS permission. Direct access may fail on some browsers or networks. Actual external API availability must be independently checked; there is no synthetic fallback for Live.
 - Browser printing produces a save-as-PDF view; there is no separate PDF generation service.
 
 ## How to Run
@@ -167,7 +167,7 @@ docker build -t field-shift-mvp .
 docker run --rm -p 3100:3100 -e PORT=3100 field-shift-mvp
 ```
 
-The public static demo is published through [`.github/workflows/pages.yml`](.github/workflows/pages.yml). The Node app needs separate hosting for Live mode. Use persistent `data/cache/` storage where practical and do not hammer the POWER API with identical requests. See [DEPLOY_AR.md](DEPLOY_AR.md).
+GitHub Pages is published through [`.github/workflows/pages.yml`](.github/workflows/pages.yml). **Browser Live works without a Node host** if NASA POWER permits the browser request. An optional Node host remains useful for backend APIs, server cache and additional dataset imports. Live browser data are reused in memory for re-ranking within a session. See [DEPLOY_AR.md](DEPLOY_AR.md).
 
 ## Screenshots
 

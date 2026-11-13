@@ -1,4 +1,4 @@
-name: Publish Field Shift team preview (synthetic demo only)
+name: Publish Field Shift (NASA POWER Live + Synthetic Demo)
 on:
   push:
     branches: [main]

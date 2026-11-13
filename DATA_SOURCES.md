@@ -33,3 +33,15 @@
 ## Current service caveat (verified on the official ISRIC site, 2026-11-13)
 
 **ISRIC currently states the SoilGrids REST API is temporarily paused.** This is why live SoilGrids access is explicitly opt-in (`FS_SOIL_LIVE=1`) and is *not* a dependency for the app to start. You may place an independently retrieved and properly attributed `soil.json` in `data/observations/` or enter an actual laboratory SOC value (g/kg, 0–5cm) in the form. Farmer-reported lab values are tagged as user input, not verified laboratory measurements. For another access path, consult ISRIC's official WMS, WebDAV and alternative data-access guidance.
+
+
+## Static GitHub Pages browser-direct NASA POWER (2026-11-13)
+
+The GitHub Pages frontend now has **Live** and **Synthetic Demo** as separate user choices.
+In Live, `public/browser-live.js` calls the [NASA POWER daily point API](https://power.larc.nasa.gov/api/temporal/daily/point) directly from the browser with the user's coordinates and the fixed historical 2020–2024 interval. It uses T2M, T2M_MAX, T2M_MIN and PRECTOTCORR, validates the response and missing-data sentinels, then calls the shared `deriveFeatures` and `evaluate` functions from `public/core.js`.
+
+This is **not** current weather or a forecast; NASA POWER meteorology is a regional grid and is not a direct measurement at a farm. A browser can read cross-origin data **only if NASA responds with suitable CORS headers** and the network is available. A failed request is shown as an error, with **no fabricated replacement**. After a successful fetch, identical-coordinate evaluations reuse the actual NASA response in browser memory only until reload, preserving its recorded retrieval time.
+
+The browser-only Live mode **does not fetch MODIS NDVI or ISRIC SoilGrids** and marks both unavailable. Soil SOC can optionally be typed by the farmer, labelled as user reported and unverified. The Node backend continues to support separate location-matched local NDVI and soil imports. The project's Synthetic Demo remains independent and explicitly simulated.
+
+Passing GitHub Actions tests validates application logic and fixtures only; it does **not** prove actual NASA service uptime or browser CORS availability. Confirm a real browser fetch and `NASA POWER Daily Point` loaded provenance before claiming operational Live data.

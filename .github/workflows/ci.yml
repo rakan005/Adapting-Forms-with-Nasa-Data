@@ -14,3 +14,4 @@ jobs:
           node-version: '22.16.0'
       - run: npm test
       - run: node --check public/app.js
+      - run: node --check public/browser-live.js
